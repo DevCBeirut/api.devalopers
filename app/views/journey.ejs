@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Journey - Playground</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <style>
+        form { padding: 20px; position: fixed; bottom: 0; width: 100%; padding-right: 50px;}
+        #messages { list-style-type: none; margin: 0; padding: 0; width: 100%;}
+        #messages li { padding: 5px 10px; }
+        #messages li.student { background:  pink;}
+
+        .container-fluid{
+            margin: 56px;
+
+        }
+
+        html{
+            overflow: hidden;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="container-fluid">
+
+
+
+
+    <form action="">
+        <div class="row">
+            <div class="col">&nbsp;</div>
+            <div class="col">token  </div>
+            <div class="col"> <input id="token" autocomplete="off" type="text" class="form-control" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2UwMzI3NzQzMGZiN2M0MDk1ZGYyZmMiLCJmdWxsX25hbWUiOiJzYW1lciBkZXJuYWkiLCJzdGF0dXMiOjEsImlhdCI6MTU1ODIwNjgzOSwiZXhwIjoxNjU4MjA2ODM4fQ.zbvSCwpnRLLa1OPVDWbQYw_Ogn6rg8KMcRz8OC5_TOo" placeholder="token ..." aria-label=""></div>
+            <div class="col">&nbsp;</div>
+        </div>
+
+        <div class="row">
+        <div class="col">&nbsp;</div>
+        <div class="col">journey id </div>
+        <div class="col"> <input id="journey" autocomplete="off" type="text" class="form-control" value="5cc44d50c8aed51ad07ec9f4" placeholder="journey id..." aria-label=""></div>
+        <div class="col">&nbsp;</div>
+    </div>
+
+        <div class="row">
+            <div class="col">&nbsp;</div>
+            <div class="col">subscribe id </div>
+            <div class="col"> <input id="subscribe" autocomplete="off" type="text" class="form-control" value="5cdfe1ced4b6cea69a16892a" placeholder="journey id..." aria-label=""></div>
+            <div class="col">&nbsp;</div>
+        </div>
+
+    <div class="row">
+        <div class="col">&nbsp;</div>
+        <div class="col">longitude  </div>
+        <div class="col"> <input id="longitude" autocomplete="off" type="text"  value="35.81779098510742" class="form-control" placeholder="longitude ..." aria-label=""></div>
+        <div class="col">&nbsp;</div>
+    </div>
+
+    <div class="row">
+        <div class="col">&nbsp;</div>
+        <div class="col">latitude  </div>
+        <div class="col"> <input id="latitude" autocomplete="off" type="text" value="34.450592041015625" class="form-control" placeholder="latitude ..." aria-label=""></div>
+        <div class="col">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col">&nbsp;</div>
+        <div class="col"><button class="btn btn-secondary" type="button" onclick="connect()">connect</button>  </div>
+        <div class="col"> <button class="btn btn-secondary" type="submit">Send</button></div>
+        <div class="col">&nbsp;<button class="btn btn-secondary" type="button" onclick="StartJourney()">Start</button></div>
+        <div class="col">&nbsp;<button class="btn btn-secondary" type="button" onclick="EndJourney()">End</button></div>
+    </div>
+    </form>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+
+    var client = null;
+
+    $('form').submit(() => {
+        const latitude = $('#latitude').val();
+        const longitude = $('#longitude').val();
+        const journey = $('#journey').val();
+        const subscribe = $('#subscribe').val();
+
+        // SendLocation
+        let data =  { usersubscribe :subscribe, latitude :latitude, longitude :longitude , journey : journey,timestamp:"323232"}
+        console.log(data)
+        client.emit('SendLocation',
+            data,
+            function(confirmation){
+                console.log(confirmation);
+            }
+        )
+
+
+        return false;
+    });
+
+
+
+    function connect(){
+        const token = $('#token').val();
+         client = io({query: 'token='+token});
+        // connect
+        client.on('connect', () => {
+            console.log("you are connected")
+
+        })
+        // disconnect
+        client.on('disconnect', () => {
+            console.log("you are disconnect")
+        })
+    }
+
+    function StartJourney(){
+        // StartJourney
+        console.log("StartJourney")
+        const subscribe = $('#subscribe').val();
+        const journey = $('#journey').val();
+        const latitude = $('#latitude').val();
+        const longitude = $('#longitude').val();
+        let data =  { usersubscribe :subscribe, startdate :"3434" , startlongitude : longitude,startlatitude:latitude,journey:journey}
+        console.log(data)
+        client.emit('StartJourney',
+            data,
+            function(confirmation){
+                console.log(confirmation);
+            }
+        )
+    }
+
+    function EndJourney(){
+        // EndJourney
+        console.log("EndJourney")
+        const subscribe = $('#subscribe').val();
+        const journey = $('#journey').val();
+        const latitude = $('#latitude').val();
+        const longitude = $('#longitude').val();
+        let data =  { usersubscribe :subscribe, journey :journey, enddate :"3434" ,duration:"333", avg : "34.133322",distance:"distance",speed:"speed",endlongitude:longitude,endlatitude:latitude}
+        console.log(data)
+        client.emit('EndJourney',
+            data,
+            function(confirmation){
+                console.log(confirmation);
+            }
+        )
+    }
+
+
+
+
+</script>
+</body>
+</html>
