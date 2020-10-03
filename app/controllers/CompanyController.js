@@ -10,7 +10,8 @@ let Logger = require("../helpers/Logger");
 let Response = require("../helpers/Response");
 let UserHelper = require("../helpers/UserHelper");
 let ImageManager = require("../helpers/ImageManager");
-
+const FormData = require("form-data");
+const fetch = require("node-fetch");
 module.exports = {
 
     /**
@@ -62,6 +63,7 @@ module.exports = {
         const file = await ImageManager.uploadbase64(req, "file")
         const skills = data.skills;
 
+
         let id = data._id;
         const questionlist = data.questionlist;
         let newdata = {}
@@ -86,6 +88,9 @@ module.exports = {
         newdata.acceptremote = data.acceptremote;
         newdata.education = data.education;
 
+        if(data.realfileattachedname && data.realfileattachedname.length>2){
+            newdata.realfileattachedname = data.realfileattachedname;
+        }
         newdata.salary = data.salary;
         newdata.skills = skills;
         newdata.questionlist = questionlist;
@@ -373,6 +378,236 @@ module.exports = {
         });
 
     },
+    githublogin: async  function (req, res) {
+        const { client_id, redirect_uri, client_secret, code,regtype } = req.body;
+
+        //console.log("githublogin server......",req.body)
+        const data = new FormData();
+
+        console.log(regtype)
+        //if(!regtype){
+          //  return Response.notOk(res,"Login Error")
+       //  }
+        data.append("client_id", client_id);
+        data.append("client_secret", client_secret);
+        data.append("code", code);
+        data.append("redirect_uri", redirect_uri);
+
+        // Request to exchange code for an access token
+        fetch(`https://github.com/login/oauth/access_token`, {
+            method: "POST",
+            body: data
+        })
+            .then(response => response.text())
+            .then(paramsString => {
+                let params = new URLSearchParams(paramsString);
+                const access_token = params.get("access_token");
+                const scope = params.get("scope");
+                const token_type = params.get("token_type");
+
+                // Request to return data of a user that has been authenticated
+                return fetch(
+                    `https://api.github.com/user?access_token=${access_token}&scope=${scope}&token_type=${token_type}`
+                );
+            })
+            .then(response => response.json())
+            .then(response => {
+
+                //console.log("ressss",response)
+                // login user
+                if(regtype=="login"){
+                    // login
+                    console.log("login...")
+                    User.findOne({ githublogin: response.login,isgithubaccount:true,githubid:response.id }, async function (error, user) {
+                        if (!user) {
+                            Company.findOne({ githublogin: response.login,isgithubaccount:true,githubid:response.id }, async function (error, user) {
+                                if (!user) {
+                                    return Response.notOk(res,"user not found");
+                                }else{
+                                    return Response.ok(res, {
+                                        msgcount: 0,
+                                        userid: user._id,
+                                        picture: user.fullpicture,
+                                        accounttype: user.accounttype,
+                                        token: await Security.generateToken(user._id, user.name, user.status),
+                                        expires: await UserHelper.getSessionTimeout()
+                                    });
+                                }
+                            });
+                        }else{
+                            return Response.ok(res, {
+                                msgcount: msgcount,
+                                userid: user._id,
+                                picture: user.fullpicture,
+                                accounttype: user.accounttype,
+                                token: await Security.generateToken(user._id, user.name, user.status),
+                                expires: await UserHelper.getSessionTimeout()
+                            });
+                        }
+                    });
+                }else if(regtype=="dev"){
+                    // check if already found
+                    User.findOne({ githublogin: response.login,isgithubaccount:true,githubid:response.id }, async function (error, user) {
+                        if (!user) {
+                          // create user
+                            let newdata = new User();
+                            newdata.name = response.login;
+                            newdata.password = response.id;
+
+                            newdata.githublogin = response.login;
+                            newdata.githubid = response.id;
+                            newdata.isgithubaccount = true;
+                            await newdata.save();
+                            return Response.ok(res,"User Registered")
+                        }else{
+                            return Response.notOk(res,"User already found")
+                        }
+                    });
+                }else {
+                    // check if already found
+                    Company.findOne({ githublogin: response.login,isgithubaccount:true,githubid:response.id }, async function (error, user) {
+                        if (!user) {
+                            // create user
+                            let newdata = new Company();
+                            newdata.name = response.login;
+                            newdata.password = response.id;
+
+                            newdata.githublogin = response.login;
+                            newdata.githubid = response.id;
+                            newdata.isgithubaccount = true;
+                            await newdata.save();
+                            return Response.ok(res,"User Registered")
+                        }else{
+                            return Response.notOk(res,"User already found")
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.log("ffff",error)
+                return Response.notOk(res,"Login Errorx")
+            });
+    },
+
+
+    linkedinlogin: async  function (req, res) {
+        const { client_id, redirect_uri, client_secret, code,regtype,state } = req.body;
+
+        //console.log("githublogin server......",req.body)
+        const data = new FormData();
+
+        console.log(regtype)
+        data.append("grant_type", "authorization_code");
+        data.append("client_id", client_id);
+        data.append("client_secret", client_secret);
+        data.append("code", code);
+        data.append("state", state);
+        data.append("redirect_uri", redirect_uri);
+
+        const link = "https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&client_id="+client_id+"&client_secret="+client_secret+"&code="+code+"&state="+state+"&redirect_uri="+redirect_uri;
+
+        // Request to exchange code for an access token
+        fetch(link, {
+            method: "POST",
+            body: data
+        })
+            .then(response => response.json())
+            .then(paramsString => {
+                let token = paramsString.access_token;
+
+
+                console.log("token "+paramsString.access_token)
+
+
+                //'Authorization', `Bearer ${token}`
+                // Request to return data of a user that has been authenticated
+
+                return fetch(
+                    `https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~digitalmediaAsset:playableStreams))`
+                ,{
+                        method: 'get',headers: {
+                            'Authorization': 'Bearer ' + token,
+                        }
+                    });
+            })
+            .then(response => response.json())
+            .then(response => {
+
+                console.log("result ",response)
+                const socialnamelink = response.localizedFirstName+" "+response.localizedLastName;
+                // login user
+                if(regtype=="login"){
+                    // login
+                    console.log("login...")
+                    User.findOne({ islinkaccount:true,linkid:response.id }, async function (error, user) {
+                        if (!user) {
+                            Company.findOne({ islinkaccount:true,linkid:response.id }, async function (error, user) {
+                                if (!user) {
+                                    return Response.notOk(res,"user not found");
+                                }else{
+                                    return Response.ok(res, {
+                                        msgcount: 0,
+                                        userid: user._id,
+                                        picture: user.fullpicture,
+                                        accounttype: user.accounttype,
+                                        token: await Security.generateToken(user._id, user.name, user.status),
+                                        expires: await UserHelper.getSessionTimeout()
+                                    });
+                                }
+                            });
+                        }else{
+                            return Response.ok(res, {
+                                msgcount: 0,
+                                userid: user._id,
+                                picture: user.fullpicture,
+                                accounttype: user.accounttype,
+                                token: await Security.generateToken(user._id, user.name, user.status),
+                                expires: await UserHelper.getSessionTimeout()
+                            });
+                        }
+                    });
+                }else if(regtype=="dev"){
+                    // check if already found
+                    User.findOne({ islinkaccount:true,linkid:response.id }, async function (error, user) {
+                        if (!user) {
+                            // create user
+                            let newdata = new User();
+                            newdata.name = socialnamelink;
+                            newdata.password = response.id;
+
+                            newdata.linkid = response.id;
+                            newdata.islinkaccount = true;
+                            await newdata.save();
+                            return Response.ok(res,"User Registered")
+                        }else{
+                            return Response.notOk(res,"User already found")
+                        }
+                    });
+                }else {
+                    // check if already found
+                    Company.findOne({ islinkaccount:true,linkid:response.id }, async function (error, user) {
+                        if (!user) {
+                            // create user
+                            let newdata = new Company();
+                            newdata.name = socialnamelink;
+                            newdata.password = response.id;
+
+                            newdata.linkid = response.id;
+                            newdata.islinkaccount = true;
+                            await newdata.save();
+                            return Response.ok(res,"User Registered")
+                        }else{
+                            return Response.notOk(res,"User already found")
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.log("error login",error)
+                return Response.notOk(res,"Login Error")
+            });
+    },
+
     updateapplicantstatus: async function (req, res) {
         let userid = req.userid;
 
@@ -450,7 +685,11 @@ module.exports = {
             salarycondition.push({ $and: [{ minsalary: { $gte: minsalary } }, { minsalary: { $lte: maxsalary } }] });
             andcondition.push({ $or: salarycondition })
         }
-        if (2>3 && isjob && startdate && startdate.length) {
+        if(!startdate && isjob){
+            const today = new Date(new Date().setDate(new Date().getDate() - 1))
+        andcondition.push({toduration: { $gt: today }})
+        }
+        if (isjob && startdate ) {
             //TODO Handle min = max
             andcondition.push(
                 {
@@ -584,8 +823,9 @@ module.exports = {
         const data = await ImageManager.uploadimagebody(req, res, "cover")
         let info = await Company.findById(userid).sort({ "$natural": -1 }).exec();
         info.cover = data.cover;
+        console.log(data);
         await info.save()
-        return res.ok();
+        return Response.ok(res);
     },
     updatepush: function (req, res) {
 

@@ -78,11 +78,10 @@ let schema = mongoose.Schema({
         type: String,
         default: ""
     },
-    cvrealfilename: {
-        type: String,
-        default: ""
-    },
-
+        cvrealfilename: {
+            type: String,
+            default: ""
+        },
     about: {
         type: String,
         default: ""
@@ -126,8 +125,29 @@ let schema = mongoose.Schema({
     },
     isloggedin: {
         type: Boolean,
-        default: false //  is the teacher certified , has more than 5 rating
+        default: false
     },
+
+        linkid: {
+            type: String,
+            default: ""
+        },
+        isgithubaccount: {
+        type: Boolean,
+        default: false
+    },
+    githubid: {
+        type: String,
+        default: ""
+    },
+        githublogin: {
+            type: String,
+            default: ""
+        },
+   islinkaccount: {
+            type: Boolean,
+            default: false
+        },
     lang: {
         type: String,
         default: 'en'

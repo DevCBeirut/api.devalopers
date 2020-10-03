@@ -60,4 +60,7 @@ router.get("/job/applicant/list",JwtAuth, CompanyController.companyapplicant);
 router.post("/job/search",JwtInfo, CompanyController.jobsearch);
 router.get("/job/delete/:id",JwtAuth, CompanyController.deletejob);
 router.post("/job/applicant/updatestatus",JwtInfo, CompanyController.updateapplicantstatus);
+
+router.post("/social/github/login", CompanyController.githublogin);
+router.post("/social/linkedin/login", CompanyController.linkedinlogin);
 module.exports = router;

@@ -185,7 +185,7 @@ module.exports = {
         console.log("sendActivationEmail ", userid, email)
         let resettoken = Security.base64encode("" + userid);
         let link = _config("app.url") + "/resetpassword/" + resettoken;
-        const msg = "Hey , please click on the link below to reset your password : <a href='" + link + "'> Click Here</a>";
+        const msg = "Hey, kindly click on the link below to reset your password : <a href='" + link + "'> Click Here</a>";
         EmailService.sendemail(email, "RESET YOUR PASSWORD", msg);
     },
 

@@ -13,6 +13,13 @@ let schema = mongoose.Schema({
         // required: true,
         // unique: true
     },
+
+        companyemail: {
+            type: String,
+            lowercase: true,
+            // required: true,
+            // unique: true
+        },
     password: {
         type: String,
         required: true
@@ -86,6 +93,26 @@ let schema = mongoose.Schema({
         default: 0
     },
 
+        linkid: {
+            type: String,
+            default: ""
+        },
+        isgithubaccount: {
+            type: Boolean,
+            default: false
+        },
+        githubid: {
+            type: String,
+            default: ""
+        },
+        githublogin: {
+            type: String,
+            default: ""
+        },
+        islinkaccount: {
+            type: Boolean,
+            default: false
+        },
     lastlogin: {
         type: Date,
     },

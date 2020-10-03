@@ -12,20 +12,20 @@ module.exports = {
         //return;
 
         const smtpTransport = nodemailer.createTransport({
-            service: 'gmail',
-            host: 'smtp.gmail.com',
-            port: 465,
+            name: process.env.emailname,
+            host: process.env.emailhost,
+            port: process.env.emailport,
             secure: true,
-            socketTimeout: 5000,
+            //socketTimeout: process.env.emailtimeout,
             logger: true,
             auth: {
-                user: _config("app.gmailfrom"),
-                pass: _config("app.gmailpass")
+                user: process.env.emailfrom,
+                pass: process.env.emailpassword
             }
         });
 
         const mailOptions = {
-            from: _config("app.gmailfrom"), // sender address
+            from: process.env.emailfrom, // sender address
             to: email, // list of receivers
             subject: subject, // Subject line
             html: msg// plain text body

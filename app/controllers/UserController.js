@@ -644,7 +644,7 @@ module.exports = {
             userdata.save();
         }
 
-        return res.ok();
+        return Response.ok(res);
     },
 
 

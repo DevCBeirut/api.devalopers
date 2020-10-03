@@ -60,6 +60,10 @@ let schema = mongoose.Schema({
         type: String,
         default: ""
     },
+        realfileattachedname: {
+            type: String,
+            default: ""
+        },
 
     status: {
         type: Number,
