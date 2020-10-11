@@ -22,12 +22,12 @@ module.exports = {
       //newdata.phone = data.phone;
      await newdata.save()*/
 
-    // let newdata = new TalentType();
-    // newdata.name ="";
-    // //newdata.phone = data.phone;
-    // await newdata.save()
+    let newdata = new TalentType();
+    newdata.name ="";
+    //newdata.phone = data.phone;
+    await newdata.save()
 
-    // return res.render("hello");
+    return res.render("hello");
   },
 
   journey: async function (req, res, next) {
@@ -46,9 +46,9 @@ module.exports = {
      newdata.managertype = "5ccd48c89cb54f9cf13ac862";
      //newdata.phone = data.phone;
      await newdata.save()*/
-    // let set = new TalentType()
-    // set.name = "Software Developer"
-    // await set.save()
+    let set = new TalentType()
+    set.name = "Software Developer"
+    await set.save()
 
 
     return res.render("journey");
