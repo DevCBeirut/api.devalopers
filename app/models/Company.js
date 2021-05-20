@@ -1,6 +1,7 @@
 let mongoose = require("mongoose");
 const mongooseLeanVirtual = require('mongoose-lean-virtuals');
 let bcrypt = require("bcrypt");
+const { toJSON, paginate } = require('./plugins');
 
 let schema = mongoose.Schema({
     name: {
@@ -205,9 +206,10 @@ schema.virtual('fullcover').get(function () {
 
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);
+schema.plugin(paginate);
 
 schema.set('toObject', { getters: true, virtuals: true });
 schema.set('toJSON', { getters: true, virtuals: true });
 
-const collectionname = "company"
+const collectionname = "company";
 module.exports = mongoose.model(collectionname, schema, collectionname);
