@@ -1,6 +1,8 @@
 let mongoose = require("mongoose");
 const mongooseLeanVirtual = require('mongoose-lean-virtuals');
 let bcrypt = require("bcrypt");
+const validator = require('validator');
+const { toJSON, paginate } = require('./plugins');
 
 let schema = mongoose.Schema({
 
@@ -18,7 +20,15 @@ let schema = mongoose.Schema({
 
     email: {
         type: String,
+        required: true,
+        unique: true,
+        trim: true,
         lowercase: true,
+        validate(value) {
+          if (!validator.isEmail(value)) {
+            throw new Error('Invalid email');
+          }
+        },
     },
 
     password: {
@@ -251,13 +261,23 @@ schema.virtual('name').get(function () {
     return this.first + " " + this.last;
 });
 
-
+/**
+ * Check if email is taken
+ * @param {string} email - The user's email
+ * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
+ * @returns {Promise<boolean>}
+ */
+ schema.statics.isEmailTaken = async function (email, excludeUserId) {
+    const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+    return !!user;
+  };
 
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);
 
 schema.set('toObject', { getters: true, virtuals: true });
 schema.set('toJSON', { getters: true, virtuals: true });
+schema.plugin(paginate);
 
 const collectionname = "user"
 module.exports = mongoose.model(collectionname, schema, collectionname);
