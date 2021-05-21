@@ -131,7 +131,7 @@ module.exports = {
 
         const storage = multer.diskStorage({
             destination: "./public/upload/",
-            filename: file.originalname,
+            filename: req.file.filename,
         });
 
         let upload = multer({
