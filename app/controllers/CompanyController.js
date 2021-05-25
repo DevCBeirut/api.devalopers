@@ -55,7 +55,10 @@ module.exports = {
             });
         });
     },
-
+    companyCountries: async function (req, res) {
+        const data =  await Company.distinct("location");       
+        return Response.ok(res, data);
+    },
     savejob: async function (req, res) {
         console.log("savejob")
         let userid = req.userid;

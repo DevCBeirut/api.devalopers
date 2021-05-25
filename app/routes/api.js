@@ -44,6 +44,13 @@ router.get("/home/frontend", HomeController.frontend);
 router.post("/home/contactus", HomeController.contactus);
 router.get("/skills/list", HomeController.allskills);
 
+router.get("/countries/list", HomeController.allCountries);
+router.get("/cities/list", HomeController.allCities);
+router.get("/country/cities", HomeController.countryCities);
+
+router.get("/company/countries", CompanyController.companyCountries);
+
+
 router.get("/dev/list/:page", HomeController.alldev);
 router.get("/talenttype/list", HomeController.talenttypelist);
 
