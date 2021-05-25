@@ -53,7 +53,7 @@ router.get("/company/info/:id",JwtInfo, CompanyController.companyinfo);
 router.get("/company/dashboard",JwtAuth, CompanyController.companydashboard);
 router.post("/company/update",JwtAuth, CompanyController.companyupdate);
 
-router.post("/company/queryCompanies",JwtAuth, CompanyController.queryCompanies);
+router.get("/company/queryCompanies",JwtAuth, CompanyController.queryCompanies);
 
 
 router.get("/job/info/:id",JwtInfo, HomeController.jobinfo);
