@@ -652,10 +652,15 @@ userlogout = async (req, res) => {
  * @param {number} [options.limit] - Maximum number of results per page (default = 10)
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
+ *  results,page,limit,totalPages,totalResults
  */
-const queryUsers = async (filter, options) => {
-  const users = await User.paginate(filter, options);
-  return users;
+const queryUsers = async (req, res) => {
+    var filter=req.body.filter===undefined?{}:req.body.filter;
+    var options=req.body.options===undefined?{}:req.body.options;
+    var users = await User.paginate(filter, options);
+    return res.ok(
+        users
+    );
 };
 module.exports = {
   queryUsers,

@@ -1013,9 +1013,14 @@ module.exports = {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-  queryCompanies : async function(filter, options)  {
+  queryCompanies : async function (req, res) {
+
+    var filter=req.body.filter===undefined?{}:req.body.filter;
+    var options=req.body.options===undefined?{}:req.body.options;
     const Companies = await Company.paginate(filter, options);
-    return Companies;
+    return res.ok(
+        Companies
+    ); 
   },
 
 };
