@@ -6,6 +6,8 @@ router.post("/user/save", UserController.createuser);
 router.post("/user/verify", UserController.verifyuser);
 router.post("/user/login", UserController.userlogin);
 router.get("/user/logout", JwtAuth,UserController.userlogout);
+router.post("/user/deactivate", JwtAuth,UserController.userdeactivate);
+router.post("/user/activate", JwtAuth,UserController.useractivate);
 
 router.post("/user/forgot", UserController.forgotpassword);
 router.post("/user/reset", UserController.resetnewpassword);

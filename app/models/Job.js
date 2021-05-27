@@ -15,6 +15,10 @@ let schema = mongoose.Schema({
         type: String,
         default: ""
     },
+    city: {
+        type: String,
+        default: ""
+    },
     acceptremote: {
         type: Boolean,
         default: false

@@ -80,6 +80,7 @@ module.exports = {
         newdata.name = data.name;
         newdata.description = data.description;
         newdata.location = data.location;
+        newdata.city = data.city;
         newdata.yearsexp = data.yearsexp;
         if (data.whoview && data.whoview.length > 1) {
             newdata.whoview = data.whoview;
@@ -129,11 +130,11 @@ module.exports = {
         if (contactid) {
             await Room.createRoom(contactid, userid)
         }
-        let roomcondition = { user: userid }
+        let roomcondition = { userid: userid._id }
         let isdev = true;
         let userinfo = await User.findById(userid).sort({ "$natural": -1 }).exec();
         if (!userinfo || !userinfo.name) {
-            roomcondition = { company: userid }
+            roomcondition = { companyid: userid._id }
             isdev = false;
         }
 

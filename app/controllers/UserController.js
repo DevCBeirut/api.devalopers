@@ -480,11 +480,12 @@ userlogin = async (req, res) => {
   let accountinfo = await User.findOne({ email: email }).exec();
 
   if (!accountinfo) {
-    accountinfo = await Company.findOne({ email: email }).exec();
+    accountinfo = await Company.findOne({ email: email}).exec();
     isdev = false;
   }
 
   if (!accountinfo) return Response.notOk(res, "Wrong login info");
+  if(!accountinfo.isactive)return Response.notOk(res, "User is deactivated, please contact system administrator");
 
   const passwordstatus = await accountinfo.comparePassword(password);
   if (!passwordstatus) {
@@ -507,7 +508,7 @@ userlogin = async (req, res) => {
   await accountinfo.save();
   accountinfo.password = undefined;
 
-  let roomcondition = { user: accountinfo._id };
+  let roomcondition = { userid: accountinfo._id };
 
   const roominfo = await Room.find(roomcondition).exec();
 
@@ -644,6 +645,32 @@ userlogout = async (req, res) => {
 
   return Response.ok(res);
 };
+userdeactivate = async (req, res) => {
+  req.logout();
+  let userid = req.userid;
+
+  console.log(userid);
+  let userdata = await User.findById(userid).exec();
+
+  if (userdata) {
+    userdata.isactive=false;
+    userdata.isloggedin = false;
+    userdata.isonline = false;
+    userdata.save();
+  }
+
+  return Response.ok(res);
+};
+useractivate = async (req, res) => {
+  let body = req.body;
+  let userid = body.userid;
+  let userdata = await User.findById(userid).exec();
+  if (userdata) {
+    userdata.isactive=true;
+    userdata.save();
+  }
+  return Response.ok(res);
+};
 /**
  * Query for users
  * @param {Object} filter - Mongo filter
@@ -665,6 +692,8 @@ const queryUsers = async (req, res) => {
 module.exports = {
   queryUsers,
   userlogout,
+  userdeactivate,
+  useractivate,
   userlogin,
   resetnewpassword,
   resetpassword,
