@@ -4,7 +4,7 @@ module.exports = {
 
     cleanall: async function () {
 
-        console.log("cleanall todo")
+        logger.info("cleanall todo")
         
 
     },

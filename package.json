@@ -63,7 +63,8 @@
     "moment": "^2.24.0",
     "mongoose": "^5.12.11",
     "mongoose-lean-virtuals": "^0.6.3",
-    "morgan": "^1.9.1",
+    "morgan": "^1.10.0",
+    "morgan-json": "^1.1.0",
     "multer": "^1.4.2",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
@@ -78,7 +79,8 @@
     "shortid": "^2.2.15",
     "util": "^0.12.1",
     "uuid": "^3.4.0",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "coveralls": "^3.0.7",

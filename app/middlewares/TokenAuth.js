@@ -1,9 +1,10 @@
 let passport = require("passport");
+let logger=require("../helpers/Logger");
 
 module.exports = function (req, res, next) {
 
     passport.authenticate('jwt', function (error, user) {
-        console.log("check authenticate " + user);
+        logger.info("check authenticate " + user);
         if (error) return next(error);
         if (!user) return res.forbidden();
 

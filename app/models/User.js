@@ -212,8 +212,6 @@ schema.statics.updateView = async function (id) {
  * @param callback
  */
 schema.methods.comparePassword = async function (password, callback) {
-  console.log("comparePassword ,,,,", password, this.password);
-  // header already sent
   return await bcrypt.compare(password, this.password);
 };
 /**

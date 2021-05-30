@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+let logger=require("../helpers/Logger")
 
 module.exports = {
 
@@ -8,7 +9,7 @@ module.exports = {
      * @param res
      */
     sendemail: async function (email,subject,msg) {
-        console.log("send email..to :"+email,msg)
+        logger.info("send email..to :"+email,msg)
         //return;
 
         const smtpTransport = nodemailer.createTransport({
@@ -33,10 +34,10 @@ module.exports = {
 
         smtpTransport.sendMail(mailOptions, function (err, info) {
             if(err){
-                console.log(err)
+                logger.info(err)
             }else{
-                console.log(info);
-                console.log("sent!")
+                logger.info(info);
+                logger.info("sent!")
             }
         });
 
@@ -71,8 +72,8 @@ module.exports = {
         // send mail with defined transport object
         let info = await transporter.sendMail(mailOptions)
 
-        console.log("Message sent: %s", info.messageId);
+        logger.info("Message sent: %s", info.messageId);
         // Preview only available when sending through an Ethereal account
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        logger.info("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     }
 }

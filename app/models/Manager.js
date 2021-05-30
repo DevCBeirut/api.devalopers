@@ -88,7 +88,6 @@ schema.pre('save', function (next) {
  */
 schema.methods.comparePassword = async function (password, callback) {
 
-    console.log("comparePassword ,,,,", password, this.password)
     // header already sent
     const match = await bcrypt.compare(password, this.password);
     if (match) {

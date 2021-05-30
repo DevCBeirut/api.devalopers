@@ -2,7 +2,7 @@ global.__basepath = process.cwd();
 
 global.app = new require("express")();
 require("./lib/helpers");
-
+let logger=require("./app/helpers/Logger");
 /* Configurations */
 
 app.loadConfig();
@@ -67,8 +67,8 @@ const initialQuestions = [
 function initial(){
     inquirer.prompt(initialQuestions).then(answers => {
         const choices =  answers.choices;
-        console.log("answers : "+answers);
-       // console.log(choices);
+        logger.info("answers : "+answers);
+       // logger.info(choices);
 
         switch (choices) {
             case 1 :
@@ -111,7 +111,7 @@ const pushiOSQuestions = [
 function askPushIOS(){
     inquirer.prompt(pushiOSQuestions).then(answers => {
         const push =  answers.data;
-        console.log("answers : "+push);
+        logger.info("answers : "+push);
 
         PushNotification.sendios(push,"Hey","Testing 123");
 
@@ -123,7 +123,7 @@ function askPushIOS(){
 function askPushAndroid(){
     inquirer.prompt(pushiOSQuestions).then(answers => {
         const push =  answers.data;
-        console.log("answers : "+push);
+        logger.info("answers : "+push);
 
         PushNotification.sendandroid( push,"Hey","from","full name","msgid","Testing 123");
 
@@ -145,7 +145,7 @@ const paymentQuestions = [
 function addpayment(){
     inquirer.prompt(paymentQuestions).then(answers => {
         const data =  answers.data;
-        console.log("answers : "+data);
+        logger.info("answers : "+data);
 
         let p = new Payment();
         p.teacher = "5c29333c8f46ee10af7c70dc";

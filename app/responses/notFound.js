@@ -1,11 +1,12 @@
 let fs = require('fs')
 let os = require("os");
 let Utils = require("../helpers/Utils");
+let logger=require("../helpers/Logger");
 
 module.exports = function (data) {
 
     if (this.res.headersSent){
-        console.log("header is already sent..")
+        logger.info("header is already sent..");
         return;
     }
     let error = new Error();
@@ -35,6 +36,7 @@ module.exports = function (data) {
     let debugStream = fs.createWriteStream(__dirname + '/../../notfound.log', {flags: 'a'})
 
     if(debugStream){
+        
         debugStream.write("ERROR ----- START :"+Utils.getCurrentDateTimeString());
         debugStream.write(os.EOL);
         debugStream.write("ip : "+ip);
@@ -45,7 +47,7 @@ module.exports = function (data) {
         debugStream.write(os.EOL);
         debugStream.write("ERROR ----- END ");
         debugStream.write(os.EOL);
-        console.log("Error Captured and logged..")
+        logger.debug("Error Captured and logged.." + req);
     }
 
 

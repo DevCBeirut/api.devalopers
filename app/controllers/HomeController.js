@@ -4,7 +4,7 @@
  */
 
 let Response = require("../helpers/Response");
-
+let logger = require("../helpers/Logger");
 let UserHelper = require("../helpers/UserHelper");
 let csc = require('country-state-city').default;
 module.exports = {
@@ -70,7 +70,7 @@ module.exports = {
     alljob: async function (req, res) {
         const page = req.params.page;
         let userid = req.userid;
-        console.log("list...." + page);
+        logger.info("list...." + page);
         const limit = _config("app.pagination_limit");
 
         let skip = 0;
@@ -79,7 +79,7 @@ module.exports = {
         }
         let today = new Date(new Date().setDate(new Date().getDate() - 1))
         let count = await Job.countDocuments({'toduration': { $gt: today } }).exec();
-        console.log("count " + count);
+        logger.info("count " + count);
         let items = []
         if (!userid || userid.length < 3) {
             items = await Job.find({ whoview: { '$regex': "Everyone", '$options': 'i' } ,'toduration': { $gt: today }},).populate("user company").sort({ "$natural": -1 }).skip(skip).limit(limit).lean({ virtuals: true }).exec();
@@ -162,7 +162,7 @@ module.exports = {
     alldev: async function (req, res) {
 
         const page = req.params.page;
-        console.log("list...." + page);
+        logger.info("list...." + page);
         const limit = _config("app.pagination_limit");
 
         let skip = 0;
@@ -170,7 +170,7 @@ module.exports = {
             skip = (page - 1) * limit;
         }
         let count = await User.countDocuments().exec();
-        console.log("count " + count);
+        logger.info("count " + count);
 
         const items = await User.find().populate("type").sort({ "$natural": -1 }).skip(skip).limit(limit).lean({ virtuals: true }).exec();
         for (let i = 0; i < items.length; i++) {
@@ -190,7 +190,7 @@ module.exports = {
 
         const items = await TalentType.find().sort({ "$natural": -1 }).lean().exec();
 
-        //console.log("items",items)
+        //logger.info("items",items)
         return Response.ok(res,
             items
         );
