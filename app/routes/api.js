@@ -6,6 +6,8 @@ router.post("/user/save", UserController.createuser);
 router.post("/user/verify", UserController.verifyuser);
 router.post("/user/login", UserController.userlogin);
 router.get("/user/logout", JwtAuth,UserController.userlogout);
+router.post("/user/deactivate", JwtAuth,UserController.userdeactivate);
+router.post("/user/activate", JwtAuth,UserController.useractivate);
 
 router.post("/user/forgot", UserController.forgotpassword);
 router.post("/user/reset", UserController.resetnewpassword);
@@ -32,7 +34,7 @@ router.get("/user/savejob/:id",JwtAuth, UserController.savejobapplicant);
 router.get("/user/my/saved",JwtAuth, UserController.mysavedjob);
 router.get("/user/my/application",JwtAuth, UserController.myapplication);
 
-router.get("/user/queryusers",JwtAuth, UserController.queryUsers);
+router.get("/user/queryusers", UserController.queryUsers);
 
 
 // company
@@ -44,6 +46,13 @@ router.get("/home/frontend", HomeController.frontend);
 router.post("/home/contactus", HomeController.contactus);
 router.get("/skills/list", HomeController.allskills);
 
+router.get("/countries/list", HomeController.allCountries);
+router.get("/cities/list", HomeController.allCities);
+router.get("/country/cities", HomeController.countryCities);
+
+router.get("/company/countries", CompanyController.companyCountries);
+
+
 router.get("/dev/list/:page", HomeController.alldev);
 router.get("/talenttype/list", HomeController.talenttypelist);
 
@@ -53,7 +62,7 @@ router.get("/company/info/:id",JwtInfo, CompanyController.companyinfo);
 router.get("/company/dashboard",JwtAuth, CompanyController.companydashboard);
 router.post("/company/update",JwtAuth, CompanyController.companyupdate);
 
-router.get("/company/queryCompanies",JwtAuth, CompanyController.queryCompanies);
+router.get("/company/queryCompanies",CompanyController.queryCompanies);
 
 
 router.get("/job/info/:id",JwtInfo, HomeController.jobinfo);

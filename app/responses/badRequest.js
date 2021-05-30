@@ -1,7 +1,8 @@
+let logger=require("../helpers/Logger");
 module.exports = function (data) {
 
     if (this.res.headersSent){
-        console.log("header is already sent..")
+        logger.info("header is already sent..")
         return;
     }
     let error = new Error();

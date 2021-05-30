@@ -27,23 +27,23 @@ program
     .option('-t, --twilio ', 'twilio db')
     .parse(process.argv);
 
-console.log('we got your command :');
-if (program.bbqSauce) console.log('  - bbq');
+    logger.info('we got your command :');
+if (program.bbqSauce) logger.info('  - bbq');
 if (program.push) {
     const token = program.args[0];
-    console.log('  you want to send push',token);
+    logger.info('  you want to send push',token);
 }
 if (program.clean) {
 
-    console.log(' cleaning...');
+    logger.info(' cleaning...');
    // MongooseHelper.dropDB();
 
-    //console.log(' saving...',ss.save());
+    //logger.info(' saving...',ss.save());
 }
 
 if (program.twilio) {
 
-    console.log(' cleaning...');
+    logger.info(' cleaning...');
 
     LocationManager.formattedAddress();
 
@@ -78,4 +78,4 @@ if (program.twilio) {
 // https://coursetro.com/posts/code/100/Solidity-Events-Tutorial---Using-Web3.js-to-Listen-for-Smart-Contract-Events
 // https://trello.com/b/RXMxpuh0/blocrecs-features
 
-console.log('commander done');
+logger.info('commander done');

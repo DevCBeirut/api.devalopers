@@ -29,7 +29,7 @@ let schema = mongoose.Schema({
 
 
 schema.statics.updateCount = async function (id) {
-    // console.log("updateCount ",id)
+    // logger.info("updateCount ",id)
     let info = await Skill.findById(id).exec();
     if (info) {
         info.count = info.count + 1;

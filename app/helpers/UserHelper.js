@@ -1,6 +1,7 @@
 let _ = require('lodash');
 
 let Security = require("../helpers/Security");
+let logger=require("./Logger");
 
 
 module.exports = {
@@ -94,16 +95,16 @@ module.exports = {
             condition = { _id: { $ne: skipjobid }, company: { $ne: skipcompanyid }, 'toduration': { $gt: today } }
         }
         let recommendedjob = await Job.find(condition).sort({ "$natural": -1 }).populate("user company").lean().limit(90).exec();
-       console.log("recommendedjob",recommendedjob.length)
+       logger.info("recommendedjob",recommendedjob.length)
         recommendedjob.map(item => {
             let score = 0
             item.skills.map(companyskill => {
                 skills.map(devskill => {
                     if (devskill && devskill._id) {
-                       // console.log(companyskill,devskill._id)
+                       // logger.info(companyskill,devskill._id)
                         if (companyskill && companyskill.toString() == devskill._id.toString()) {
                             score = score + 1
-                            console.log("addding"+devskill.name);
+                            logger.info("addding"+devskill.name);
                         }
                     } else {
                         if (companyskill && companyskill == devskill) {
@@ -119,14 +120,14 @@ module.exports = {
         relevantjob = relevantjob.sort((a, b) => a.score < b.score ? 1 : -1)
         relevantjob = relevantjob.filter((item, index) => index < 3);
         let mostactiveid = []
-        console.log("relevantjob",relevantjob)
+        logger.info("relevantjob",relevantjob)
         relevantjob.map(item => {
             if (item.score > 0) {
                 mostactiveid.push(item.job)
            }
         })
-      //  console.log("relevantjob",relevantjob.length)
-       // console.log("mostactiveid",mostactiveid.length)
+      //  logger.info("relevantjob",relevantjob.length)
+       // logger.info("mostactiveid",mostactiveid.length)
         recommendedjob = []
         if (mostactiveid.length > 0) {
             recommendedjob = await Job.find({ _id: mostactiveid }).populate("user company").sort({ "$natural": -1 }).lean({ virtuals: true }).exec()
@@ -182,7 +183,7 @@ module.exports = {
     },
 
     sendResetPasswordEmail: async function (userid, email) {
-        console.log("sendActivationEmail ", userid, email)
+        logger.info("sendActivationEmail ", userid, email)
         let resettoken = Security.base64encode("" + userid);
         let link = _config("app.url") + "/resetpassword/" + resettoken;
         const msg = "Hey, kindly click on the link below to reset your password : <a href='" + link + "'> Click Here</a>";
@@ -190,7 +191,7 @@ module.exports = {
     },
 
     sendVerificationEmail: async function (userid, email) {
-        console.log("sendVerificationEmail ", userid, email)
+        logger.info("sendVerificationEmail ", userid, email)
         let resettoken = Security.base64encode("" + userid);
         let link = _config("app.url") + "/verifyemail/" + resettoken;
         const msg = "Hey , please click on the link below to verify your email : <a href='" + link + "'> Click Here</a>";

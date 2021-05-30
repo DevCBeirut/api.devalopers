@@ -1,8 +1,9 @@
-.vscode
 node_modules
+.git
 __tests__
 .gitignore
 .gitlab-ci.yml
 azure-pipelines.yml
 LICENSE
 README.md
+.vscode

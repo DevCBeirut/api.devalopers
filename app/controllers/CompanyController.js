@@ -6,7 +6,7 @@ let jwt = require("jsonwebtoken");
 let _ = require('lodash');
 let Utils = require("../helpers/Utils");
 let Security = require("../helpers/Security");
-let Logger = require("../helpers/Logger");
+let logger = require("../helpers/Logger");
 let Response = require("../helpers/Response");
 let UserHelper = require("../helpers/UserHelper");
 let ImageManager = require("../helpers/ImageManager");
@@ -47,7 +47,7 @@ module.exports = {
             //await  ImageManager.uploadimagebase64(user._id,req);
             //const msg = "Please enter this activation core : "+random+" to verify your account";
             // EmailService.send(user.email, "Activate YOUR Account Now", msg);
-            //console.log(user)
+            //logger.info(user)
             return Response.ok(res, {
                 msg: "Please Verify your account",
                 token: await Security.generateToken(user._id, user.name, user.status),
@@ -55,9 +55,12 @@ module.exports = {
             });
         });
     },
-
+    companyCountries: async function (req, res) {
+        const data =  await Company.distinct("location");       
+        return Response.ok(res, data);
+    },
     savejob: async function (req, res) {
-        console.log("savejob")
+        logger.info("savejob")
         let userid = req.userid;
         const data = req.body;
         const file = await ImageManager.uploadbase64(req, "file")
@@ -77,6 +80,7 @@ module.exports = {
         newdata.name = data.name;
         newdata.description = data.description;
         newdata.location = data.location;
+        newdata.city = data.city;
         newdata.yearsexp = data.yearsexp;
         if (data.whoview && data.whoview.length > 1) {
             newdata.whoview = data.whoview;
@@ -126,11 +130,11 @@ module.exports = {
         if (contactid) {
             await Room.createRoom(contactid, userid)
         }
-        let roomcondition = { user: userid }
+        let roomcondition = { userid: userid._id }
         let isdev = true;
         let userinfo = await User.findById(userid).sort({ "$natural": -1 }).exec();
         if (!userinfo || !userinfo.name) {
-            roomcondition = { company: userid }
+            roomcondition = { companyid: userid._id }
             isdev = false;
         }
 
@@ -162,7 +166,7 @@ module.exports = {
 
 
     saveapplicantmessage: async function (req, res) {
-        console.log("saveapplicantjob")
+        logger.info("saveapplicantjob")
 
         const message = req.body.message;
         const roomid = req.body.roomid;
@@ -191,7 +195,7 @@ module.exports = {
     },
 
     saveapplicantjob: async function (req, res) {
-        console.log("saveapplicantjob")
+        logger.info("saveapplicantjob")
         let userid = req.userid;
         const coverletter = req.body.coverletter;
         const jobid = req.body.jobid;
@@ -381,10 +385,10 @@ module.exports = {
     githublogin: async  function (req, res) {
         const { client_id, redirect_uri, client_secret, code,regtype } = req.body;
 
-        //console.log("githublogin server......",req.body)
+        //logger.info("githublogin server......",req.body)
         const data = new FormData();
 
-        console.log(regtype)
+        logger.info(regtype)
         //if(!regtype){
           //  return Response.notOk(res,"Login Error")
        //  }
@@ -413,11 +417,11 @@ module.exports = {
             .then(response => response.json())
             .then(response => {
 
-                //console.log("ressss",response)
+                //logger.info("ressss",response)
                 // login user
                 if(regtype=="login"){
                     // login
-                    console.log("login...")
+                    logger.info("login...")
                     User.findOne({ githublogin: response.login,isgithubaccount:true,githubid:response.id }, async function (error, user) {
                         if (!user) {
                             Company.findOne({ githublogin: response.login,isgithubaccount:true,githubid:response.id }, async function (error, user) {
@@ -484,7 +488,7 @@ module.exports = {
                 }
             })
             .catch(error => {
-                console.log("ffff",error)
+                logger.error(error);
                 return Response.notOk(res,"Login Errorx")
             });
     },
@@ -493,10 +497,10 @@ module.exports = {
     linkedinlogin: async  function (req, res) {
         const { client_id, redirect_uri, client_secret, code,regtype,state } = req.body;
 
-        //console.log("githublogin server......",req.body)
+        //logger.info("githublogin server......",req.body)
         const data = new FormData();
 
-        console.log(regtype)
+        logger.info(regtype)
         data.append("grant_type", "authorization_code");
         data.append("client_id", client_id);
         data.append("client_secret", client_secret);
@@ -516,7 +520,7 @@ module.exports = {
                 let token = paramsString.access_token;
 
 
-                console.log("token "+paramsString.access_token)
+                logger.info("token "+paramsString.access_token)
 
 
                 //'Authorization', `Bearer ${token}`
@@ -533,12 +537,12 @@ module.exports = {
             .then(response => response.json())
             .then(response => {
 
-                console.log("result ",response)
+                logger.info("result ",response)
                 const socialnamelink = response.localizedFirstName+" "+response.localizedLastName;
                 // login user
                 if(regtype=="login"){
                     // login
-                    console.log("login...")
+                    logger.info("login...")
                     User.findOne({ islinkaccount:true,linkid:response.id }, async function (error, user) {
                         if (!user) {
                             Company.findOne({ islinkaccount:true,linkid:response.id }, async function (error, user) {
@@ -603,7 +607,7 @@ module.exports = {
                 }
             })
             .catch(error => {
-                console.log("error login",error)
+                logger.info("error login",error)
                 return Response.notOk(res,"Login Error")
             });
     },
@@ -647,8 +651,6 @@ module.exports = {
         let excludeNoSalary = req.body.excludeNoSalary;
         let country = req.body.country;
 
-        console.log(req.body)
-
 
         let orcondition = []
         if (fulltime) {
@@ -668,7 +670,7 @@ module.exports = {
             andcondition.push({ whoview: { '$regex': "Everyone", '$options': 'i' } })
         }
         let salarycondition = []
-        console.log("maxsalary", maxsalary,orcondition)
+        logger.info("maxsalary", maxsalary,orcondition)
 
         if (isjob && excludeNoSalary) {
             andcondition.push({ $and: [{ minsalary: { $gte: 0 } }, { maxsalary: { $gte: 0 } }] });
@@ -759,7 +761,7 @@ module.exports = {
 
 
         if (!isjob && type && type.length > 0) {
-            console.log("cond type ")
+            logger.info("cond type ")
             andcondition.push({ type: { $in: type } })
         }
         if (containskills) {
@@ -770,7 +772,7 @@ module.exports = {
             }
 
 
-            console.log("orcondition",orcondition)
+            logger.info("orcondition",orcondition)
 
           if (isjob) {
                 data = await Job.find({
@@ -782,8 +784,8 @@ module.exports = {
             }
         } else {
 
-           // console.log("xx99x",orcondition,isjob)
-            console.log("condition",andcondition)
+           // logger.info("xx99x",orcondition,isjob)
+            logger.info("condition",andcondition)
            // orcondition = [ { jobtype: { '$regex': "Full time", '$options': 'i' } } ];
 
             if (isjob) {
@@ -791,7 +793,7 @@ module.exports = {
                     $or: orcondition,
                     $and: andcondition
                 }).populate("company").sort({ "$natural": -1 }).lean().exec();
-                //console.log("data",data)
+                //logger.info("data",data)
             } else { // talent
                 data = await User.find({
                     $or: orcondition,
@@ -823,7 +825,7 @@ module.exports = {
         const data = await ImageManager.uploadimagebody(req, res, "cover")
         let info = await Company.findById(userid).sort({ "$natural": -1 }).exec();
         info.cover = data.cover;
-        console.log(data);
+        logger.info(data);
         await info.save()
         return Response.ok(res);
     },
@@ -911,7 +913,7 @@ module.exports = {
         let user = jwt.decode(token);
         let body = req.body;
         //  let verifycode = body.verify;
-        // console.log("verify...." + body.verify,user)
+        // logger.info("verify...." + body.verify,user)
         if (!user) {
             return res.notFound("user not found");
         }
@@ -928,7 +930,7 @@ module.exports = {
 
             user.password = undefined;
 
-            Logger.log("" + user._id, "verified ", req.path);
+            logger.info("" + user._id, "verified ", req.path);
 
             const settinginfo = await Settings.findOne().lean().exec();
 
@@ -982,7 +984,7 @@ module.exports = {
         res.cookie('XSRF-TOKEN', csrfToken);
         res.locals.csrfToken = csrfToken;
 
-        console.log(csrfToken)
+        logger.info(csrfToken)
 
         return res.render("resetpassword", { url: url, token: hashtoken, csrfToken: csrfToken });
     },
@@ -993,7 +995,7 @@ module.exports = {
         req.logout();
         let userid = req.userid;
 
-        console.log(userid)
+        logger.info(userid)
         let userdata = await User.findById(userid).exec();
 
         if (userdata) {

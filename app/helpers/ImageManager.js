@@ -3,6 +3,7 @@ let fs = require("fs");
 let uuidv4 = require("uuid/v4");
 const path = require("path");
 const util = require("util");
+let logger=require('./Logger');
 module.exports = {
 
     multiuploadfields: async function (req, res, fieldname1 = "picture", fieldname2 = "picture", prefix = "profile") {
@@ -29,43 +30,43 @@ module.exports = {
             await uploadx(req, res);
 
             let body = req.body;
-            // console.log("files",req.files)
-            // console.log(body)
+            // logger.info("files",req.files)
+            // logger.info(body)
             if (body && req.files && req.files[fieldname1]) {
                 body[fieldname1] = req.files[fieldname1];
-                console.log("files1", req.files[fieldname1])
+                logger.info("files1", req.files[fieldname1])
                 if (body[fieldname1] && body[fieldname1].filter) {
                     body[fieldname1] = body[fieldname1].filter(item => item !== undefined)
                 }
 
             }
             if (body && req.files && req.files[fieldname2] && req.files[fieldname2]) {
-                console.log("files2", req.files[fieldname2])
+                logger.info("files2", req.files[fieldname2])
                 body[fieldname2] = req.files[fieldname2][0].filename;
                 // unlink the other
 
-                console.log("files2xxx ", body[fieldname2], req.files[fieldname2][0].filename)
+                logger.info("files2xxx ", body[fieldname2], req.files[fieldname2][0].filename)
                 try {
                     if (req.files[fieldname2][1]) {
                         const deletedPath = "./public/upload/" + req.files[fieldname2][1].filename;
-                        console.log("delete...", deletedPath)
+                        logger.info("delete...", deletedPath)
                         fs.unlinkSync(deletedPath)
                     }
                 } catch (err) {
-                    console.error(err)
+                    logger.error(err)
                 }
 
 
             }
             if (body) {
-                console.log("success upload ")
+                logger.info("success upload ")
                 return body
             } else {
                 return body
             }
         } catch (e) {
 
-            console.log("error ", e)
+            logger.info("error ", e)
         }
 
 
@@ -83,12 +84,12 @@ module.exports = {
             await fs.writeFile(filepath, encoded, { encoding: 'base64' }, function (error) {
                 if (error) return "";
             });
-            console.log("saving...", filename)
+            logger.info("saving...", filename)
 
             return filename
         }
         catch (error) {
-            console.log("uploadimagebase64 false")
+            logger.info("uploadimagebase64 false")
             return "";
         }
     },
@@ -113,13 +114,13 @@ module.exports = {
         await uploadx(req, res);
 
         let body = req.body;
-        //console.log("files",req.files)
+        //logger.info("files",req.files)
         if (body && req.files) {
             body[fieldname] = req.files;
         }
-        console.log("multi picture file length " + req.files.length);
+        logger.info("multi picture file length " + req.files.length);
         if (body) {
-            console.log("success upload ")
+            logger.info("success upload ")
             return body
         } else {
             return body
@@ -149,7 +150,7 @@ module.exports = {
             body[fieldname] = req.file.filename;
         }
         if (body) {
-            console.log("success upload ")
+            logger.info("success upload ")
             return body
         } else {
             return ""

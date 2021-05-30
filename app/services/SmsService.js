@@ -1,4 +1,4 @@
-
+let logger=require("../helpers/Logger");
 
 module.exports = {
 
@@ -9,7 +9,7 @@ module.exports = {
      */
     sendsms: function (msg,phone) {
         // Sending ...
-        console.log("sending sms to..."+phone)
+        logger.info("sending sms to..."+phone)
 
 
 

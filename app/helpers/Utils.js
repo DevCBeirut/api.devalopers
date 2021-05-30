@@ -8,7 +8,7 @@ module.exports = {
         try {
 
             const deletedPath = "./public/upload/" + path.basename(filename);
-            console.log("delete...", deletedPath)
+            logger.info("delete...", deletedPath)
             fs.unlinkSync(deletedPath)
 
         } catch (err) {
@@ -19,7 +19,7 @@ module.exports = {
     isdateBigger: function (startDate, endDate) {
         let isAfter = moment(startDate).isAfter(endDate);
 
-        console.log("compare ", isAfter)
+        logger.info("compare ", isAfter)
         if (isAfter) {
             return false;
         }

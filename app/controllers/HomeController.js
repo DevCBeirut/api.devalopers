@@ -4,8 +4,9 @@
  */
 
 let Response = require("../helpers/Response");
-
+let logger = require("../helpers/Logger");
 let UserHelper = require("../helpers/UserHelper");
+let csc = require('country-state-city').default;
 module.exports = {
 
     frontend: async function (req, res) {
@@ -19,19 +20,19 @@ module.exports = {
 
         const testimonials = [{
             picture: "",
-            description: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor",
-            name: "adel",
-            jobtitle: "CFO"
+            description: "Love this website, flexible and easy to use, I found a lot of job opportunities in Lebanon and abroad",
+            name: "Sami A. ",
+            jobtitle: "Senior software engineer"
         }, {
             picture: "",
-            description: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor",
-            name: "adel",
-            jobtitle: "CFO"
+            description: "This platform helped me find highly-skilled employees to the needed roles in my company, skill match is a great idea, moreover the user experience as a company was great",
+            name: "Lara S.",
+            jobtitle: "Web development company Owner"
         }, {
             picture: "",
-            description: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor",
-            name: "adel",
-            jobtitle: "CFO"
+            description: "Great website, loved the usabily. I created my account in 2 minutes, after finalizing my profile, I took a look into the skill matched jobs and applied directly, whole process took around 10 minutes ",
+            name: "Jad K. ",
+            jobtitle: "Information Technology Undergraduate"
         }]
         return Response.ok(res, {
             skilllist: skilllist,
@@ -40,6 +41,7 @@ module.exports = {
             companylist: companylist
         });
     },
+
 
     contactus: async function (req, res) {
         let data = new Contact(req.body)
@@ -51,10 +53,24 @@ module.exports = {
         const data = await Skill.find().sort({ "$natural": -1 }).lean().exec();
         return Response.ok(res, data);
     },
+    allCountries: async function (req, res) {
+        const data = await  csc.getAllCountries();
+        return Response.ok(res, data);
+    },
+    allCities: async function (req, res) {
+        const data = await  csc.getAllCities();
+        return Response.ok(res, data);
+    },    
+    countryCities: async function (req, res) {
+        const countryCode=req.body.countryCode===undefined?"LB":req.body.countryCode;
+        const data = await  csc.getCitiesOfCountry(countryCode);
+        return Response.ok(res, data);
+    },
+    
     alljob: async function (req, res) {
         const page = req.params.page;
         let userid = req.userid;
-        console.log("list...." + page);
+        logger.info("list...." + page);
         const limit = _config("app.pagination_limit");
 
         let skip = 0;
@@ -63,7 +79,7 @@ module.exports = {
         }
         let today = new Date(new Date().setDate(new Date().getDate() - 1))
         let count = await Job.countDocuments({'toduration': { $gt: today } }).exec();
-        console.log("count " + count);
+        logger.info("count " + count);
         let items = []
         if (!userid || userid.length < 3) {
             items = await Job.find({ whoview: { '$regex': "Everyone", '$options': 'i' } ,'toduration': { $gt: today }},).populate("user company").sort({ "$natural": -1 }).skip(skip).limit(limit).lean({ virtuals: true }).exec();
@@ -146,7 +162,7 @@ module.exports = {
     alldev: async function (req, res) {
 
         const page = req.params.page;
-        console.log("list...." + page);
+        logger.info("list...." + page);
         const limit = _config("app.pagination_limit");
 
         let skip = 0;
@@ -154,7 +170,7 @@ module.exports = {
             skip = (page - 1) * limit;
         }
         let count = await User.countDocuments().exec();
-        console.log("count " + count);
+        logger.info("count " + count);
 
         const items = await User.find().populate("type").sort({ "$natural": -1 }).skip(skip).limit(limit).lean({ virtuals: true }).exec();
         for (let i = 0; i < items.length; i++) {
@@ -174,7 +190,7 @@ module.exports = {
 
         const items = await TalentType.find().sort({ "$natural": -1 }).lean().exec();
 
-        //console.log("items",items)
+        //logger.info("items",items)
         return Response.ok(res,
             items
         );

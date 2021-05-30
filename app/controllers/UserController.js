@@ -6,7 +6,7 @@
 let jwt = require("jsonwebtoken");
 let _ = require("lodash");
 let Security = require("../helpers/Security");
-let Logger = require("../helpers/Logger");
+let logger = require("../helpers/Logger");
 let Utils = require("../helpers/Utils");
 let UserHelper = require("../helpers/UserHelper");
 let ImageManager = require("../helpers/ImageManager");
@@ -31,7 +31,7 @@ createuser = async (req, res) => {
   }
 
   user.save(async function (error, user) {
-    console.log("error", error);
+    logger.info("error", error);
     if (error) return Response.notOk(res, "Incorrect Data");
 
     return Response.ok(res, {
@@ -89,7 +89,7 @@ userinfo = async (req, res) => {
       (i) => i.endschoolyear !== "present"
     );
     info.education = _.orderBy(nopresenteducation, "endschoolyear", "desc");
-    // console.log("presenteducation",presenteducation)
+    // logger.info("presenteducation",presenteducation)
     info.education = presenteducation.concat(info.education);
   }
 
@@ -217,7 +217,7 @@ updateskills = async (req, res) => {
   let userid = req.userid;
   let info = await User.findById(userid).exec();
   const skills = req.body.skills;
-  console.log("skills", skills);
+  logger.info("skills", skills);
 
   info.skills = skills;
   await info.save();
@@ -232,10 +232,10 @@ updatecv = async (req, res) => {
     info.cvrealfilename = data.cvrealfilename;
 
     await info.save();
-    console.log("xxx");
+    logger.info("xxx");
     return Response.ok(res);
   } catch (e) {
-    console.log("error");
+    logger.info("error");
     return Response.notOk(res, "Error Please Try again");
   }
 };
@@ -425,7 +425,7 @@ verifyuser = async (req, res) => {
   let user = jwt.decode(token);
   let body = req.body;
   //  let verifycode = body.verify;
-  // console.log("verify...." + body.verify,user)
+  // logger.info("verify...." + body.verify,user)
   if (!user) {
     return res.notFound("user not found");
   }
@@ -442,7 +442,7 @@ verifyuser = async (req, res) => {
 
     user.password = undefined;
 
-    Logger.log("" + user._id, "verified ", req.path);
+    logger.info("" + user._id, "verified ", req.path);
 
     const settinginfo = await Settings.findOne().lean().exec();
 
@@ -473,18 +473,19 @@ userlogin = async (req, res) => {
   let email = body.email;
   let password = body.password;
   let isdev = true;
-  // console.log("login...email : " + email + " pass : " + password);
+  // logger.info("login...email : " + email + " pass : " + password);
   if (!email || !password)
     return Response.notOk(res, "email and password required");
 
   let accountinfo = await User.findOne({ email: email }).exec();
 
   if (!accountinfo) {
-    accountinfo = await Company.findOne({ email: email }).exec();
+    accountinfo = await Company.findOne({ email: email}).exec();
     isdev = false;
   }
 
   if (!accountinfo) return Response.notOk(res, "Wrong login info");
+  if(!accountinfo.isactive)return Response.notOk(res, "User is deactivated, please contact system administrator");
 
   const passwordstatus = await accountinfo.comparePassword(password);
   if (!passwordstatus) {
@@ -507,7 +508,7 @@ userlogin = async (req, res) => {
   await accountinfo.save();
   accountinfo.password = undefined;
 
-  let roomcondition = { user: accountinfo._id };
+  let roomcondition = { userid: accountinfo._id };
 
   const roominfo = await Room.find(roomcondition).exec();
 
@@ -526,7 +527,7 @@ userlogin = async (req, res) => {
       };
     }
     const msgcounter = await Message.countDocuments(condition).exec();
-    //console.log("msgcount",msgcount,condition)
+    //logger.info("msgcount",msgcount,condition)
     msgcount = msgcount + msgcounter;
   }
 
@@ -593,7 +594,7 @@ resetpassword = (req, res) => {
   res.cookie("XSRF-TOKEN", csrfToken);
   res.locals.csrfToken = csrfToken;
 
-  console.log(csrfToken);
+  logger.info(csrfToken);
 
   return res.render("resetpassword", {
     url: url,
@@ -617,7 +618,7 @@ resetnewpassword = async (req, res) => {
     if (userdata) {
       userdata.password = newpass;
       await userdata.save();
-      console.log("passwordchanged", data);
+      logger.info("passwordchanged", data);
       return res.ok();
     } else {
       return res.notFound("User not found");
@@ -633,7 +634,7 @@ userlogout = async (req, res) => {
   req.logout();
   let userid = req.userid;
 
-  console.log(userid);
+  logger.info(userid);
   let userdata = await User.findById(userid).exec();
 
   if (userdata) {
@@ -642,6 +643,32 @@ userlogout = async (req, res) => {
     userdata.save();
   }
 
+  return Response.ok(res);
+};
+userdeactivate = async (req, res) => {
+  req.logout();
+  let userid = req.userid;
+
+  logger.info(userid);
+  let userdata = await User.findById(userid).exec();
+
+  if (userdata) {
+    userdata.isactive=false;
+    userdata.isloggedin = false;
+    userdata.isonline = false;
+    userdata.save();
+  }
+
+  return Response.ok(res);
+};
+useractivate = async (req, res) => {
+  let body = req.body;
+  let userid = body.userid;
+  let userdata = await User.findById(userid).exec();
+  if (userdata) {
+    userdata.isactive=true;
+    userdata.save();
+  }
   return Response.ok(res);
 };
 /**
@@ -665,6 +692,8 @@ const queryUsers = async (req, res) => {
 module.exports = {
   queryUsers,
   userlogout,
+  userdeactivate,
+  useractivate,
   userlogin,
   resetnewpassword,
   resetpassword,
