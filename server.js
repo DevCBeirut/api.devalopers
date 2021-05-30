@@ -2,8 +2,8 @@ let fs = require('fs')
 let os = require("os");
 let helmet = require('helmet');
 let compression = require('compression');
-const logger = require('./app/helpers/logger')
-const httpLogger = require('./app/helpers/httpLogger')
+const logger = require('./app/helpers/Logger');
+const httpLogger = require('./app/helpers/httpLogger');
 
 global.__basepath = process.cwd();
 require('dotenv').config()
