@@ -62,7 +62,8 @@ router.get("/company/info/:id",JwtInfo, CompanyController.companyinfo);
 router.get("/company/dashboard",JwtAuth, CompanyController.companydashboard);
 router.post("/company/update",JwtAuth, CompanyController.companyupdate);
 
-router.get("/company/queryCompanies",CompanyController.queryCompanies);
+router.post("/company/queryCompanies",CompanyController.queryCompanies);
+router.post("/company/queryJobs",CompanyController.queryJobs);
 
 
 router.get("/job/info/:id",JwtInfo, HomeController.jobinfo);

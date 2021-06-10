@@ -1,6 +1,7 @@
 let mongoose = require("mongoose");
 
 const mongooseLeanVirtual = require('mongoose-lean-virtuals');
+const { toJSON, paginate } = require("./plugins");
 
 let schema = mongoose.Schema({
     name: {
@@ -109,5 +110,6 @@ schema.virtual('fullfile').get(function () {
 
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);
+schema.plugin(paginate);
 
 module.exports = mongoose.model(collectionname, schema, collectionname);

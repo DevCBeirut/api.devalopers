@@ -1,5 +1,7 @@
 const winston = require('winston');
+require('winston-mongodb');
 let path = require("path");
+require('dotenv').config();
 
 const options = {
   file: {
@@ -51,6 +53,12 @@ const options = {
       winston.format.align(),
       winston.format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`)
    )   
+  },
+  MongoDB:{
+    level:'notice',
+    db:process.env.dburl,
+    collection:'logs',
+    tryReconnect:true
   }
 };
 
@@ -60,9 +68,10 @@ const logger = winston.createLogger({
     new winston.transports.File(options.file),
     new winston.transports.File(options.file_error),
     new winston.transports.Console(options.console),
-    new winston.transports.Console(options.console_error)
+    new winston.transports.Console(options.console_error),
+    new winston.transports.MongoDB(options.MongoDB)
   ],
   exitOnError: false
 })
 
-module.exports = logger
+module.exports = logger;
