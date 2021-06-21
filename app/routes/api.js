@@ -34,7 +34,7 @@ router.get("/user/savejob/:id",JwtAuth, UserController.savejobapplicant);
 router.get("/user/my/saved",JwtAuth, UserController.mysavedjob);
 router.get("/user/my/application",JwtAuth, UserController.myapplication);
 
-router.get("/user/queryusers", UserController.queryUsers);
+router.post("/user/queryusers", UserController.queryUsers);
 
 
 // company
@@ -64,6 +64,7 @@ router.post("/company/update",JwtAuth, CompanyController.companyupdate);
 
 router.post("/company/queryCompanies",CompanyController.queryCompanies);
 router.post("/company/queryJobs",CompanyController.queryJobs);
+
 
 
 router.get("/job/info/:id",JwtInfo, HomeController.jobinfo);
