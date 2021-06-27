@@ -1024,6 +1024,23 @@ module.exports = {
         Companies
     ); 
   },
+/**
+ * Query for jobs
+ * @param {Object} filter - Mongo filter
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+ queryJobs : async function (req, res) {
 
+    var filter=req.body.filter===undefined?{}:req.body.filter;
+    var options=req.body.options===undefined?{}:req.body.options;
+    const Jobs = await Job.paginate(filter, options);
+    return res.ok(
+        Jobs
+    ); 
+  },
 };
 

@@ -50,7 +50,7 @@ module.exports = {
     },
 
     allskills: async function (req, res) {
-        const data = await Skill.find().sort({ "$natural": -1 }).lean().exec();
+        const data = await Skill.find().sort({ "type": 1 ,"name": 1,"count": -1 }).lean().exec();
         return Response.ok(res, data);
     },
     allCountries: async function (req, res) {
@@ -188,7 +188,7 @@ module.exports = {
 
     talenttypelist: async function (req, res) {
 
-        const items = await TalentType.find().sort({ "$natural": -1 }).lean().exec();
+        const items = await TalentType.find().sort({ "name": 1 }).lean().exec();
 
         //logger.info("items",items)
         return Response.ok(res,
