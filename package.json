@@ -19,7 +19,7 @@
     "url": "https://github.com/DevCBeirut/api.devalopers"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": "14"
   },
   "license": "BSD-3-Clause-Clear",
   "scripts": {
