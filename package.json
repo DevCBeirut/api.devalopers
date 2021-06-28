@@ -45,6 +45,7 @@
     "cryptr": "^6.0.1",
     "csurf": "^1.11.0",
     "dotenv": "^8.2.0",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-back": "0.0.2",
     "express-flash": "0.0.2",
