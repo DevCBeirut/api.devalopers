@@ -1,47 +1,44 @@
 let mongoose = require("mongoose");
 
-const mongooseLeanVirtual = require('mongoose-lean-virtuals');
+const mongooseLeanVirtual = require("mongoose-lean-virtuals");
 
-let schema = mongoose.Schema({
-
+let schema = mongoose.Schema(
+  {
     coverletter: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     job: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'job',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "job",
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user', // dev
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user", // dev
     },
     answers: {
-        type: [Object],
-        default: [], // dev
+      type: [Object],
+      default: [], // dev
     },
 
     status: {
-        type: String,
-        default: "Pending"
+      type: String,
+      default: "Pending",
     },
     company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'company',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "company",
     },
-
-}, {
+  },
+  {
     versionKey: false,
-    timestamps: true
-}
+    timestamps: true,
+  }
 );
 
 const collectionname = "jobapplicant";
-schema.set('toObject', { getters: true, virtuals: true });
-schema.set('toJSON', { getters: true, virtuals: true });
-
-
-
+schema.set("toObject", { getters: true, virtuals: true });
+schema.set("toJSON", { getters: true, virtuals: true });
 
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);

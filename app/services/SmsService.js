@@ -1,18 +1,13 @@
-let logger=require("../helpers/Logger");
+let logger = require("../helpers/Logger");
 
 module.exports = {
-
-    /**
-     * Send emails
-     * @param req
-     * @param res
-     */
-    sendsms: function (msg,phone) {
-        // Sending ...
-        logger.info("sending sms to..."+phone)
-
-
-
-
-    },
-}
+  /**
+   * Send emails
+   * @param req
+   * @param res
+   */
+  sendsms: function (msg, phone) {
+    // Sending ...
+    logger.info("sending sms to..." + phone);
+  },
+};

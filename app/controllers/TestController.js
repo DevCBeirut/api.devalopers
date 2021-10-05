@@ -1,6 +1,4 @@
-
 module.exports = {
-
   /**
    * Show homepage
    * @param req
@@ -8,7 +6,6 @@ module.exports = {
    * @param next
    */
   index: async function (req, res, next) {
-
     /* await ManagerType.Clear();
       const adminid = await ManagerType.AddManager("admin");
       await ManagerType.AddManager("manager");
@@ -23,15 +20,14 @@ module.exports = {
      await newdata.save()*/
 
     let newdata = new TalentType();
-    newdata.name ="";
+    newdata.name = "";
     //newdata.phone = data.phone;
-    await newdata.save()
+    await newdata.save();
 
     return res.render("hello");
   },
 
   journey: async function (req, res, next) {
-
     /* await ManagerType.AddManager("admin");
      await ManagerType.AddManager("officer");
      await ManagerType.AddManager("support");
@@ -46,15 +42,10 @@ module.exports = {
      newdata.managertype = "5ccd48c89cb54f9cf13ac862";
      //newdata.phone = data.phone;
      await newdata.save()*/
-    let set = new TalentType()
-    set.name = "Software Developer"
-    await set.save()
-
+    let set = new TalentType();
+    set.name = "Software Developer";
+    await set.save();
 
     return res.render("journey");
   },
-
-
-
-
 };

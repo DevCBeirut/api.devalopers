@@ -1,33 +1,35 @@
 let mongoose = require("mongoose");
 
-let schema = mongoose.Schema({
+let schema = mongoose.Schema(
+  {
     name: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
 
     description: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     lang: {
-        type: String,
-        default: "en"
+      type: String,
+      default: "en",
     },
     order: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     status: {
-        type: Number,
-        default: 1
-    }
-}, {
+      type: Number,
+      default: 1,
+    },
+  },
+  {
     versionKey: false,
-    timestamps: true
-}
+    timestamps: true,
+  }
 );
 
-schema.set('toObject', { getters: true, virtuals: true });
-schema.set('toJSON', { getters: true, virtuals: true });
+schema.set("toObject", { getters: true, virtuals: true });
+schema.set("toJSON", { getters: true, virtuals: true });
 module.exports = mongoose.model("talenttype", schema, "talenttype");

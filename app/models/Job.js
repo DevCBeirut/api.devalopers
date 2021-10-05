@@ -1,112 +1,114 @@
 let mongoose = require("mongoose");
 
-const mongooseLeanVirtual = require('mongoose-lean-virtuals');
+const mongooseLeanVirtual = require("mongoose-lean-virtuals");
 const { toJSON, paginate } = require("./plugins");
 
-let schema = mongoose.Schema({
+let schema = mongoose.Schema(
+  {
     name: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     description: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     location: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     city: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     acceptremote: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     toduration: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     fromduration: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     jobtype: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     whoview: {
-        type: String,
-        default: "Everyone"
+      type: String,
+      default: "Everyone",
     },
     education: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     skills: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'skill',
-        default: []
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "skill",
+      default: [],
     },
     yearsexp: {
-        type: String,
-        default: "1"
+      type: String,
+      default: "1",
     },
     salary: {
-        type: String,
-        default: "0"
+      type: String,
+      default: "0",
+    },
+    currency: {
+      type: String,
+      default: "",
     },
     questionlist: {
-        type: [Object],
-        default: []
+      type: [Object],
+      default: [],
     },
     file: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
-        realfileattachedname: {
-            type: String,
-            default: ""
-        },
+    realfileattachedname: {
+      type: String,
+      default: "",
+    },
 
     status: {
-        type: Number,
-        default: 1
+      type: Number,
+      default: 1,
     },
     minsalary: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     maxsalary: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'company',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "company",
     },
-
-}, {
+  },
+  {
     versionKey: false,
-    timestamps: true
-}
+    timestamps: true,
+  }
 );
 
 const collectionname = "job";
-schema.set('toObject', { getters: true, virtuals: true });
-schema.set('toJSON', { getters: true, virtuals: true });
+schema.set("toObject", { getters: true, virtuals: true });
+schema.set("toJSON", { getters: true, virtuals: true });
 
-
-
-schema.virtual('fullfile').get(function () {
-    let fullcv = "";
-    if (this.file && this.file.length > 2) {
-        fullcv = _config("app.imageurl") + this.file;
-    }
-    return fullcv;
+schema.virtual("fullfile").get(function () {
+  let fullcv = "";
+  if (this.file && this.file.length > 2) {
+    fullcv = _config("app.imageurl") + this.file;
+  }
+  return fullcv;
 });
-
 
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);

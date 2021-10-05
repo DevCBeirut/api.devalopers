@@ -1,84 +1,80 @@
 let mongoose = require("mongoose");
 let bcrypt = require("bcrypt");
 
-let schema = mongoose.Schema({
+let schema = mongoose.Schema(
+  {
     full_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     phone: {
-        type: String,
-        defalut: ""
+      type: String,
+      defalut: "",
     },
     deleted: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     username: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     status: {
-        type: Number,
-        default: 1 // 0 not verified , 1 verified
+      type: Number,
+      default: 1, // 0 not verified , 1 verified
     },
     comments: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     managertype: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'managertype',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "managertype",
     },
 
     lang: {
-        type: String,
-        default: 'en'
+      type: String,
+      default: "en",
     },
     lastlogin: {
-        type: Date
-    }
-
-}, {
+      type: Date,
+    },
+  },
+  {
     versionKey: false,
-    timestamps: true
-}
+    timestamps: true,
+  }
 );
 
-schema.pre('save', function (next) {
+schema.pre("save", function (next) {
+  let user = this;
 
-    let user = this;
+  // generate a salt
 
-    // generate a salt
+  if (user.isModified("password") || user.isNew) {
+    bcrypt.genSalt(10, function (error, salt) {
+      if (error) return next(error);
 
-    if (user.isModified("password") || user.isNew) {
+      // hash the password along with our new salt
 
-        bcrypt.genSalt(10, function (error, salt) {
+      bcrypt.hash(user.password, salt, function (error, hash) {
+        if (error) return next(error);
 
-            if (error) return next(error);
+        // override the cleartext password with the hashed one
 
-            // hash the password along with our new salt
+        user.password = hash;
 
-            bcrypt.hash(user.password, salt, function (error, hash) {
-
-                if (error) return next(error);
-
-                // override the cleartext password with the hashed one
-
-                user.password = hash;
-
-                next(null, user);
-            });
-        });
-
-    } else {
         next(null, user);
-    }
+      });
+    });
+  } else {
+    next(null, user);
+  }
 });
 
 /**
@@ -87,22 +83,17 @@ schema.pre('save', function (next) {
  * @param callback
  */
 schema.methods.comparePassword = async function (password, callback) {
-
-    // header already sent
-    const match = await bcrypt.compare(password, this.password);
-    if (match) {
-        callback(true);
-    } else {
-        callback(false);
-    }
+  // header already sent
+  const match = await bcrypt.compare(password, this.password);
+  if (match) {
+    callback(true);
+  } else {
+    callback(false);
+  }
 };
 
+schema.set("toObject", { getters: true, virtuals: true });
+schema.set("toJSON", { getters: true, virtuals: true });
 
-
-
-
-schema.set('toObject', { getters: true, virtuals: true });
-schema.set('toJSON', { getters: true, virtuals: true });
-
-const collectionname = "manager"
+const collectionname = "manager";
 module.exports = mongoose.model(collectionname, schema, collectionname);

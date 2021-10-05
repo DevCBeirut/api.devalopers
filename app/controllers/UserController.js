@@ -480,12 +480,16 @@ userlogin = async (req, res) => {
   let accountinfo = await User.findOne({ email: email }).exec();
 
   if (!accountinfo) {
-    accountinfo = await Company.findOne({ email: email}).exec();
+    accountinfo = await Company.findOne({ email: email }).exec();
     isdev = false;
   }
 
   if (!accountinfo) return Response.notOk(res, "Wrong login info");
-  if(!accountinfo.isactive)return Response.notOk(res, "User is deactivated, please contact system administrator");
+  if (!accountinfo.isactive)
+    return Response.notOk(
+      res,
+      "User is deactivated, please contact system administrator"
+    );
 
   const passwordstatus = await accountinfo.comparePassword(password);
   if (!passwordstatus) {
@@ -653,7 +657,7 @@ userdeactivate = async (req, res) => {
   let userdata = await User.findById(userid).exec();
 
   if (userdata) {
-    userdata.isactive=false;
+    userdata.isactive = false;
     userdata.isloggedin = false;
     userdata.isonline = false;
     userdata.save();
@@ -666,7 +670,7 @@ useractivate = async (req, res) => {
   let userid = body.userid;
   let userdata = await User.findById(userid).exec();
   if (userdata) {
-    userdata.isactive=true;
+    userdata.isactive = true;
     userdata.save();
   }
   return Response.ok(res);
@@ -682,12 +686,10 @@ useractivate = async (req, res) => {
  *  results,page,limit,totalPages,totalResults
  */
 const queryUsers = async (req, res) => {
-    var filter=req.body.filter===undefined?{}:req.body.filter;
-    var options=req.body.options===undefined?{}:req.body.options;
-    var users = await User.paginate(filter, options);
-    return res.ok(
-        users
-    );
+  var filter = req.body.filter === undefined ? {} : req.body.filter;
+  var options = req.body.options === undefined ? {} : req.body.options;
+  var users = await User.paginate(filter, options);
+  return res.ok(users);
 };
 module.exports = {
   queryUsers,
