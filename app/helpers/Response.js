@@ -1,40 +1,27 @@
 
 module.exports = {
 
+    apiresponse:function (res,success,status=200, data = undefined) {
+        let response = {};
+        response.message = data;
+        response.status = status;
+        response.success = success;
+        return res.status(status).json(response);
+    },
     ok: function (res, data = undefined) {
-        let response = {};
-        response.data = data;
-        response.status = 200;
-        response.success = true;
-        return res.status(200).json(response);
+        return this.apiresponse (res,true,200,data);
     },
-    notOk: function (res, message = undefined) {
-        let response = {};
-        response.message = message;
-        response.status = 200;
-        response.success = false;
-        return res.status(200).json(response);
+    notOk: function (res, message = undefined) {    
+        return this.apiresponse (res,false,200,message);
     },
-    exist: function (res, message = undefined) {
-        let response = {};
-        response.message = message;
-        response.status = 409;
-        response.success = false;
-        return res.status(409).json(response);
+    exist: function (res, message = undefined) {   
+        return this.apiresponse (res,false,409,message);
     },
     wronginfo: function (res, message = undefined) {
-        let response = {};
-        response.message = message;
-        response.status = 401;
-        response.success = false;
-        return res.status(401).json(response);
+        return this.apiresponse (res,false,401,message);
     },
     notfound: function (res, message = undefined) {
-        let response = {};
-        response.message = message;
-        response.status = 404;
-        response.success = false;
-        return res.status(404).json(response);
+        return this.apiresponse (res,false,404,message);
     },
 
 };
