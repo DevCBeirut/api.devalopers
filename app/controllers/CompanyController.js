@@ -25,15 +25,15 @@ module.exports = {
     user.companyemail = req.body.email;
     let count = await Company.countDocuments({ email: req.body.email }).exec();
     if (count > 0) {
-      return Response.notOk(res, "Email already found");
+      return Response.exist(res, "Email already found");
     }
     count = await Company.countDocuments({ name: req.body.name }).exec();
     if (count > 0) {
-      return Response.notOk(res, "Name already found");
+      return Response.exist(res, "Name already found");
     }
     count = await User.countDocuments({ email: req.body.email }).exec();
     if (count > 0) {
-      return Response.notOk(res, "Email already found");
+      return Response.exist(res, "Email already found");
     }
 
     // const random = Utils.randomnumber();

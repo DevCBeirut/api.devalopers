@@ -15,5 +15,19 @@ module.exports = {
         response.success = false;
         return res.json(response);
     },
+    exist: function (res, message = undefined) {
+        let response = {};
+        response.message = message;
+        response.status = 409;
+        response.success = false;
+        return res.json(response);
+    },
+    wronginfo: function (res, message = undefined) {
+        let response = {};
+        response.message = message;
+        response.status = 401;
+        response.success = false;
+        return res.json(response);
+    },
 
 };

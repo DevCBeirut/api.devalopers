@@ -23,11 +23,11 @@ createuser = async (req, res) => {
 
   let count = await User.countDocuments({ email: req.body.email }).exec();
   if (count > 0) {
-    return Response.notOk(res, "Email already found");
+    return Response.exist(res, "Email already found");
   }
   count = await Company.countDocuments({ email: req.body.email }).exec();
   if (count > 0) {
-    return Response.notOk(res, "Email already found");
+    return Response.exist(res, "Email already found");
   }
 
   user.save(async function (error, user) {
@@ -486,14 +486,14 @@ userlogin = async (req, res) => {
 
   if (!accountinfo) return Response.notOk(res, "Wrong login info");
   if (!accountinfo.isactive)
-    return Response.notOk(
+    return Response.wronginfo(
       res,
       "User is deactivated, please contact system administrator"
     );
 
   const passwordstatus = await accountinfo.comparePassword(password);
   if (!passwordstatus) {
-    return Response.notOk(res, "Invalid password");
+    return Response.wronginfo(res, "Invalid password");
   }
 
   if (accountinfo.status === 0) {
