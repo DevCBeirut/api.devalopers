@@ -34,7 +34,7 @@ module.exports = {
         response.message = message;
         response.status = 404;
         response.success = false;
-        return res.status(401).json(response);
+        return res.status(404).json(response);
     },
 
 };
