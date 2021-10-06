@@ -29,5 +29,12 @@ module.exports = {
         response.success = false;
         return res.json(response);
     },
+    notfound: function (res, message = undefined) {
+        let response = {};
+        response.message = message;
+        response.status = 404;
+        response.success = false;
+        return res.json(response);
+    },
 
 };

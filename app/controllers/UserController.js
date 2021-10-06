@@ -484,7 +484,7 @@ userlogin = async (req, res) => {
     isdev = false;
   }
 
-  if (!accountinfo) return Response.notOk(res, "Wrong login info");
+  if (!accountinfo) return Response.notfound(res, "Wrong login info");
   if (!accountinfo.isactive)
     return Response.wronginfo(
       res,
