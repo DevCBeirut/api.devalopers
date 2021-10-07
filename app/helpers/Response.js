@@ -3,7 +3,7 @@ module.exports = {
 
     apiresponse:function (res,success,status=200, data = undefined) {
         let response = {};
-        response.message = data;
+        response.data = data;
         response.status = status;
         response.success = success;
         return res.status(status).json(response);
