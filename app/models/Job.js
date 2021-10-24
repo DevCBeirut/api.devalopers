@@ -1,4 +1,5 @@
 let mongoose = require("mongoose");
+let mongoosastic = require('mongoosastic');
 
 const mongooseLeanVirtual = require("mongoose-lean-virtuals");
 const { toJSON, paginate } = require("./plugins");
@@ -113,5 +114,6 @@ schema.virtual("fullfile").get(function () {
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);
 schema.plugin(paginate);
+schema.plugin(mongoosastic);
 
 module.exports = mongoose.model(collectionname, schema, collectionname);

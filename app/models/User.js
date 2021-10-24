@@ -3,16 +3,17 @@ const mongooseLeanVirtual = require("mongoose-lean-virtuals");
 let bcrypt = require("bcrypt");
 const validator = require("validator");
 const { toJSON, paginate } = require("./plugins");
+let mongoosastic = require('mongoosastic');
 
 let schema = mongoose.Schema(
   {
     first: {
       type: String,
-      default: "",
+      default: "", es_indexed:true 
     },
     last: {
       type: String,
-      default: "",
+      default: "", es_indexed:true 
     },
 
     email: {
@@ -61,7 +62,7 @@ let schema = mongoose.Schema(
       ref: "skill",
       default: [],
     },
-    language: {
+    languages: {
       type: [Object],
       default: [],
     },
@@ -71,7 +72,7 @@ let schema = mongoose.Schema(
     },
     education: {
       type: [Object],
-      default: [],
+      default: [], es_indexed:true 
     },
     exp: {
       type: [Object],
@@ -173,6 +174,8 @@ let schema = mongoose.Schema(
   }
 );
 
+schema.index({first: 'text',last: 'text'});
+
 schema.pre("save", function (next) {
   let user = this;
 
@@ -270,6 +273,14 @@ schema.plugin(mongooseLeanVirtual);
 schema.set("toObject", { getters: true, virtuals: true });
 schema.set("toJSON", { getters: true, virtuals: true });
 schema.plugin(paginate);
+
+
+schema.plugin(mongoosastic, {  
+  host:process.env.elastichost,
+  port: process.env.elasticport,
+  protocol: process.env.elasticprotocol,
+  auth: process.env.elasticccredentials
+});
 
 const collectionname = "user";
 module.exports = mongoose.model(collectionname, schema, collectionname);

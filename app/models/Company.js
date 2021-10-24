@@ -2,6 +2,7 @@ let mongoose = require("mongoose");
 const mongooseLeanVirtual = require("mongoose-lean-virtuals");
 let bcrypt = require("bcrypt");
 const { toJSON, paginate } = require("./plugins");
+let mongoosastic = require('mongoosastic');
 
 let schema = mongoose.Schema(
   {
@@ -207,6 +208,7 @@ schema.virtual("fullcover").get(function () {
 // Plugin must be *after* virtuals
 schema.plugin(mongooseLeanVirtual);
 schema.plugin(paginate);
+schema.plugin(mongoosastic);
 
 schema.set("toObject", { getters: true, virtuals: true });
 schema.set("toJSON", { getters: true, virtuals: true });

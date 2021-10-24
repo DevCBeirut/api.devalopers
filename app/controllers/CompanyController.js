@@ -340,7 +340,63 @@ module.exports = {
       profileprogress: profileprogress,
     });
   },
+  companyupdatenoimg: async function (req, res) {
+    let companyid = req.userid;
+    const data = req.body;
+    const name = data.name;
+    const location = data.location;
+    const website = data.website;
+    const description = data.description;
+    const type = data.type;
+    const picture = data.picture;
+    const companyemail = data.companyemail;
+    const removepic = data.removepic;
 
+    const country = data.country;
+    const address = data.address;
+
+    const linkfb = data.linkfb;
+    const linklinking = data.linklinking;
+    const linkgithub = data.linkgithub;
+
+    let companyinfo = await Company.findById(companyid)
+      .sort({ $natural: -1 })
+      .exec();
+
+    companyinfo.name = name;
+    companyinfo.location = location;
+    companyinfo.description = description;
+    companyinfo.type = type;
+
+    companyinfo.address = address;
+
+    companyinfo.website = website;
+
+    companyinfo.linkfb = linkfb;
+
+    companyinfo.linklinking = linklinking;
+
+    companyinfo.linkgithub = linkgithub;
+    companyinfo.companyemail = companyemail;
+
+    if (picture.length > 1) {
+      companyinfo.picture = picture;
+    }
+    if (!picture && removepic) {
+      companyinfo.picture = "";
+    }
+
+    await companyinfo.save();
+    return Response.ok(res, {
+      picture: companyinfo.fullpicture,
+    });
+  },
+  companyimage: async function (req, res) {
+    const data = await ImageManager.uploadimagebody(req, res);
+    return Response.ok(res, {
+      picture: req.file.filename,
+    });
+  },
   companyupdate: async function (req, res) {
     let companyid = req.userid;
     const data = await ImageManager.uploadimagebody(req, res);
@@ -754,6 +810,10 @@ module.exports = {
     await data.save();
 
     return Response.ok(res);
+  },
+  jobquery: async function(req,res){
+    let searchcriteria= {jobtype:req.body.jobtype,county:req.body.country,skills:req.body.skills,minsalary:req.body.minsalary,maxsalary:req.body.maxsalary,startdate:req.body.startdate,enddate:req.body.enddate,remoteonly:req.body.remoteonly};
+    jobs.find({$or:[{jobtype:searchcriteria.jobtype},{county:searchcriteria.county}]},function(err,docs){});
   },
   jobsearch: async function (req, res) {
     let userid = req.userid;
