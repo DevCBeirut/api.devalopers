@@ -64,6 +64,7 @@ router.get("/company/my/job", JwtAuth, HomeController.mycompanyjob);
 router.get("/company/info/:id", JwtInfo, CompanyController.companyinfo);
 router.get("/company/dashboard", JwtAuth, CompanyController.companydashboard);
 router.post("/company/update", JwtAuth, CompanyController.companyupdatenoimg);
+router.post("/company/updateimg", JwtAuth, CompanyController.companyimage);
 
 router.post("/company/queryCompanies", CompanyController.queryCompanies);
 router.post("/company/queryJobs", CompanyController.queryJobs);
