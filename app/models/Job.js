@@ -99,6 +99,8 @@ let schema = mongoose.Schema(
   }
 );
 
+schema.index({'$**':'text'});
+
 const collectionname = "job";
 schema.set("toObject", { getters: true, virtuals: true });
 schema.set("toJSON", { getters: true, virtuals: true });

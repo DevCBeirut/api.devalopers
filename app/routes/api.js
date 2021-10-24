@@ -85,6 +85,8 @@ router.get("/job/messages/:contactid", JwtAuth, CompanyController.allmessages);
 router.get("/job/messages", JwtAuth, CompanyController.allmessages);
 router.get("/job/applicant/list", JwtAuth, CompanyController.companyapplicant);
 router.post("/job/search", JwtInfo, CompanyController.jobsearch);
+router.post("/job/query", JwtInfo, CompanyController.jobtextsearch);
+
 router.get("/job/delete/:id", JwtAuth, CompanyController.deletejob);
 router.post(
   "/job/applicant/updatestatus",

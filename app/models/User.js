@@ -174,7 +174,7 @@ let schema = mongoose.Schema(
   }
 );
 
-schema.index({first: 'text',last: 'text'});
+schema.index({'$**':'text'});
 
 schema.pre("save", function (next) {
   let user = this;

@@ -133,6 +133,8 @@ let schema = mongoose.Schema(
   }
 );
 
+schema.index({'$**':'text'});
+
 schema.pre("save", function (next) {
   let user = this;
 

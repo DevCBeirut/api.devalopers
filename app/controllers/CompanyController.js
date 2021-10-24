@@ -811,10 +811,14 @@ module.exports = {
 
     return Response.ok(res);
   },
-  jobquery: async function(req,res){
-    let searchcriteria= {jobtype:req.body.jobtype,county:req.body.country,skills:req.body.skills,minsalary:req.body.minsalary,maxsalary:req.body.maxsalary,startdate:req.body.startdate,enddate:req.body.enddate,remoteonly:req.body.remoteonly};
-    jobs.find({$or:[{jobtype:searchcriteria.jobtype},{county:searchcriteria.county}]},function(err,docs){});
+  jobtextsearch: async function (req, res) {
+    var query_string = req.body.query_string;
+    Job.find({ $text: { $search: query_string } }).exec(function (err, docs) {
+      if (err) console.log(err);
+      return res.ok(docs);
+    });
   },
+
   jobsearch: async function (req, res) {
     let userid = req.userid;
 
