@@ -379,7 +379,7 @@ module.exports = {
     companyinfo.linkgithub = linkgithub;
     companyinfo.companyemail = companyemail;
 
-    if (picture.length > 1) {
+    if (picture && picture.length > 1) {
       companyinfo.picture = picture;
     }
     if (!picture && removepic) {
@@ -388,7 +388,7 @@ module.exports = {
 
     await companyinfo.save();
     return Response.ok(res, {
-      picture: companyinfo.fullpicture,
+      Name: companyinfo.name,
     });
   },
   companyimage: async function (req, res) {
