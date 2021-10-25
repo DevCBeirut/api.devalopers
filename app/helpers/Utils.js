@@ -1,5 +1,5 @@
-const moment = require("moment")
-let fs = require("fs");;
+const moment = require("moment");
+let fs = require("fs");
 const path = require("path");
 module.exports = {
 

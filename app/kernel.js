@@ -2,7 +2,7 @@ let express = require("express");
 let path = require("path");
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-
+const logger=require('./helpers/Logger');
 /* Building mongodb connection object */
 
 require("./../lib/mongoose");
@@ -27,12 +27,18 @@ app.use(require("./../lib/i18n"));
 // session
 
 
-app.use(session({
+app.use(
+  session({
     secret: _config("app.secret"),
-    store: new MongoStore({ url: process.env.dburl }),
+    store: new MongoStore({ url: process.env.dburl }),    
+    autoRemove: "native",
+    crypto: {
+        secret: _config("app.secret")
+    },
     resave: true,
-    saveUninitialized: true
-}));
+    saveUninitialized: true,
+  })
+);
 
 /* Logging in development only */
 
@@ -58,6 +64,7 @@ app.use(require("body-parser").json({limit: '50mb'}));
 /* Defining the request.isAPI boolean flag */
 
 app.use(function (req, res, next) {
+    logger.debug(`origin: ${req.get('origin')} - host: ${req.get('host')} - request: ${req.url} `);
     req.isAPI = req.url.startsWith("/" + _config("app.api_prefix"));
     next();
 });
@@ -105,7 +112,8 @@ app.use(require("express-flash")());
 /* Passing the request object to views */
 
 app.use(function (req, res, next) {
-
+    logger.debug(req.header);
+    logger.debug(req.body);
     var origRender = res.render;
 
     res.render = function (view, locals, callback) {

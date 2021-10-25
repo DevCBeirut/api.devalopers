@@ -811,10 +811,10 @@ module.exports = {
 
     return Response.ok(res);
   },
-  jobtextsearch: async function (req, res) {
+  jobtextsearch: async function (req, res,next) {
     var query_string = req.body.query_string;
     Job.find({ $text: { $search: query_string } }).exec(function (err, docs) {
-      if (err) console.log(err);
+      if (err) {logger.error(err);next(err);}
       return res.ok(docs);
     });
   },

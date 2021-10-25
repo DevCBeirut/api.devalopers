@@ -692,21 +692,15 @@ const queryUsers = async (req, res) => {
   return res.ok(users);
 };
 
-const searchUsers = async(req,res)=>{
- var  query_string=req.body.query_string;
-  User.find({$text: {$search: query_string}}).exec(function(err, docs) { 
-    if(err)console.log(err);
+const searchUsers = async (req, res, next) => {
+  var query_string = req.body.query_string;
+  User.find({ $text: { $search: query_string } }).exec(function (err, docs) {
+    if (err) {
+      logger.error(err);
+      next(err);
+    }
     return res.ok(docs);
-   });
- /* 
-var users = await User.search(query_string, function(err, results) {
-   console.log(err);
-   console.log(results);
-  return res.ok(results);
-  
-});
-*/
-
+  });
 };
 module.exports = {
   queryUsers,
