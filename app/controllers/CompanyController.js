@@ -19,52 +19,73 @@ module.exports = {
    * @param res
    * @returns {*}
    */
-  createcompany: async function (req, res) {
+  createcompany: async function (req, res, next) {
     let user = new Company(req.body);
 
     user.companyemail = req.body.email;
-    let count = await Company.countDocuments({ email: req.body.email }).exec();
-    if (count > 0) {
-      return Response.exist(res, "Email already found");
+    try {
+      let count = await Company.countDocuments({
+        email: req.body.email,
+      }).exec();
+      if (count > 0) {
+        return Response.exist(res, "Email already found");
+      }
+      count = await Company.countDocuments({ name: req.body.name }).exec();
+      if (count > 0) {
+        return Response.exist(res, "Name already found");
+      }
+      count = await User.countDocuments({ email: req.body.email }).exec();
+      if (count > 0) {
+        return Response.exist(res, "Email already found");
+      }
+    } catch (error) {
+      logger.error(error);
+      next();
     }
-    count = await Company.countDocuments({ name: req.body.name }).exec();
-    if (count > 0) {
-      return Response.exist(res, "Name already found");
-    }
-    count = await User.countDocuments({ email: req.body.email }).exec();
-    if (count > 0) {
-      return Response.exist(res, "Email already found");
-    }
-
     // const random = Utils.randomnumber();
     // user.activationcode = random;
     // UserHelper.sendVerificationAccount(user.phone,random);
 
     user.save(async function (error, user) {
-      if (error) return res.serverError("data error", error);
+      if (error) {
+        logger.error(error);
+        return res.serverError("data error", error);
+      }
       //await  ImageManager.uploadimagebase64(user._id,req);
       //const msg = "Please enter this activation core : "+random+" to verify your account";
       // EmailService.send(user.email, "Activate YOUR Account Now", msg);
       //logger.info(user)
       return Response.ok(res, {
+        userid:user._id,
         msg: "Please Verify your account",
         token: await Security.generateToken(user._id, user.name, user.status),
         expires: await UserHelper.getSessionTimeout(),
       });
     });
   },
-  companyCountries: async function (req, res) {
-    const data = await Company.distinct("location");
-    return Response.ok(res, data);
+  companyCountries: async function (req, res, next) {
+    try {
+      const data = await Company.distinct("location");
+      return Response.ok(res, data);
+    } catch (error) {
+      logger.error(error);
+      next();
+    }
   },
-  jobCurrencies: async function (req, res) {
-    const data = await Job.distinct("currency");
-    return Response.ok(res, data);
+  jobCurrencies: async function (req, res, next) {
+    try {
+      const data = await Job.distinct("currency");
+      return Response.ok(res, data);
+    } catch (error) {
+      logger.error(error);
+      next();
+    }
   },
   savejob: async function (req, res) {
-    logger.info("savejob");
+    
     let userid = req.userid;
     const data = req.body;
+    logger.info(`New job added for ${userid} with name: ${data.name}`);
     const file = await ImageManager.uploadbase64(req, "file");
     const skills = data.skills;
 
@@ -811,10 +832,13 @@ module.exports = {
 
     return Response.ok(res);
   },
-  jobtextsearch: async function (req, res,next) {
+  jobtextsearch: async function (req, res, next) {
     var query_string = req.body.query_string;
     Job.find({ $text: { $search: query_string } }).exec(function (err, docs) {
-      if (err) {logger.error(err);next(err);}
+      if (err) {
+        logger.error(err);
+        next(err);
+      }
       return res.ok(docs);
     });
   },
@@ -1170,8 +1194,6 @@ module.exports = {
     } catch (e) {
       return res.render("verifyemailnook");
     }
-
-    return res.render("verifyemailok");
   },
 
   resetpassword: function (req, res) {

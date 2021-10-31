@@ -111,9 +111,7 @@ app.use(require("express-flash")());
 
 /* Passing the request object to views */
 
-app.use(function (req, res, next) {
-    logger.debug(req.header);
-    logger.debug(req.body);
+app.use(function (req, res, next) {  
     var origRender = res.render;
 
     res.render = function (view, locals, callback) {
