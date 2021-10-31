@@ -320,38 +320,55 @@ updateeducation = async (req, res) => {
   await info.save();
   return res.ok();
 };
-userdashboard = async (req, res) => {
+userdashboard = async (req, res, next) => {
   let userid = req.userid;
-  const info = await User.findById(userid)
-    .sort({ $natural: -1 })
-    .lean({ virtuals: true })
-    .exec();
-  const countsavedjobs = await JobSaved.countDocuments({ user: userid })
-    .lean()
-    .exec();
-  const countapplicant = await JobApplicant.countDocuments({ user: userid })
-    .lean({ virtuals: true })
-    .exec();
+  try {
+    logger.debug(`getting user info of ${userid}`);
+    const info = await User.findById(userid)
+      .sort({ $natural: -1 })
+      .lean({ virtuals: true })
+      .exec();
+      logger.debug(`User ${info} fetched`);
+      logger.debug(`Counting saved jobs ${userid}`);
+    const countsavedjobs = await JobSaved.countDocuments({ user: userid })
+      .lean()
+      .exec();
+      logger.debug(`Counting applied jobs ${userid}`);
+    const countapplicant = await JobApplicant.countDocuments({ user: userid })
+      .lean({ virtuals: true })
+      .exec();
+      logger.debug(`Getting most active companies`);
+    const mostactivecompanies = await UserHelper.mostactivecompanies();
+    logger.debug(`Counting developers`);
+    let countdev = await User.countDocuments({ status: 1 }).exec();
+    logger.debug(`Counting companies`);
+    let countcompany = await Company.countDocuments({ status: 1 }).exec();
+    logger.debug(`Counting jobs`);
+    let countjob = await Job.countDocuments({ status: 1 }).exec();
+    const statistics = {
+      jobs: countjob,
+      companies: countcompany,
+      dev: countdev,
+    };
+    logger.debug(`Calculating profile progress of ${info}`);
+    let profileprogress = await UserHelper.calculateProfileProgress(info);
+    logger.debug(`Getting the recommended jobs with ${info.skills}`);
+    const recommendedjob = await UserHelper.recommendedjob(info.skills);
 
-  const mostactivecompanies = await UserHelper.mostactivecompanies();
-  let countdev = await User.countDocuments({ status: 1 }).exec();
-  let countcompany = await Company.countDocuments({ status: 1 }).exec();
-  let countjob = await Job.countDocuments({ status: 1 }).exec();
-  const statistics = { jobs: countjob, companies: countcompany, dev: countdev };
-  let profileprogress = await UserHelper.calculateProfileProgress(info);
-
-  const recommendedjob = await UserHelper.recommendedjob(info.skills);
-
-  return Response.ok(res, {
-    info: info,
-    countsavedjobs: countsavedjobs,
-    countapplicant: countapplicant,
-    countprofileview: info.views,
-    mostactivecompanies: mostactivecompanies,
-    statistics: statistics,
-    profileprogress: profileprogress,
-    recommendedjob: recommendedjob,
-  });
+    return Response.ok(res, {
+      info: info,
+      countsavedjobs: countsavedjobs,
+      countapplicant: countapplicant,
+      countprofileview: info.views,
+      mostactivecompanies: mostactivecompanies,
+      statistics: statistics,
+      profileprogress: profileprogress,
+      recommendedjob: recommendedjob,
+    });
+  } catch (error) {
+    logger.error(error);
+    next();
+  }
 };
 mysavedjob = async (req, res) => {
   let companyid = req.userid;
