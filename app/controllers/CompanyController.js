@@ -1256,6 +1256,8 @@ module.exports = {
   queryJobs: async function (req, res) {
     var filter = req.body.filter === undefined ? {} : req.body.filter;
     var options = req.body.options === undefined ? {} : req.body.options;
+    logger.debug(`filter : ${filter}`);
+    logger.debug(`options : ${options}`);
     const Jobs = await Job.paginate(filter, options);
     return res.ok(Jobs);
   },

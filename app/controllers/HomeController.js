@@ -266,7 +266,7 @@ module.exports = {
       company: companyid,
       toduration: { $gt: today },
     })
-      .populate("user company")
+      .populate("company")
       .sort({ $natural: -1 })
       .lean()
       .exec();
@@ -275,7 +275,7 @@ module.exports = {
       company: companyid,
       toduration: { $lt: today },
     })
-      .populate("user company")
+      .populate("company")
       .lean()
       .exec();
 
