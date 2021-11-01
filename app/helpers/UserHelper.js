@@ -104,7 +104,7 @@ module.exports = {
       }
       let recommendedjob = await Job.find(condition)
         .sort({ $natural: -1 })
-        .populate("user company")
+        .populate("company")
         .lean()
         .limit(90)
         .exec();
@@ -146,7 +146,7 @@ module.exports = {
       recommendedjob = [];
       if (mostactiveid.length > 0) {
         recommendedjob = await Job.find({ _id: mostactiveid })
-          .populate("user company")
+          .populate("company")
           .sort({ $natural: -1 })
           .lean({ virtuals: true })
           .exec();
@@ -171,7 +171,7 @@ module.exports = {
     }
     let explorejobs_arr = await Job.find(condition)
       .sort({ $natural: -1 })
-      .populate("user company")
+      .populate("company")
       .lean()
       .limit(90)
       .exec();

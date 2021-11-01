@@ -105,7 +105,7 @@ module.exports = {
         whoview: { $regex: "Everyone", $options: "i" },
         toduration: { $gt: today },
       })
-        .populate("user company")
+        .populate("company")
         .sort({ $natural: -1 })
         .skip(skip)
         .limit(limit)
@@ -113,7 +113,7 @@ module.exports = {
         .exec();
     } else {
       items = await Job.find({ toduration: { $gt: today } })
-        .populate("user company")
+        .populate("company")
         .sort({ $natural: -1 })
         .skip(skip)
         .limit(limit)
@@ -141,7 +141,7 @@ module.exports = {
     let data = await Job.findById(jobid)
       .populate("company")
       .sort({ $natural: -1 })
-      .populate("user company")
+      .populate("company")
       .lean({ virtuals: true })
       .exec();
     let saved = false;
@@ -193,7 +193,7 @@ module.exports = {
     if (data.company) {
       companyid = data.company._id;
       otherjob = await Job.find({ _id: { $ne: jobid }, company: companyid })
-        .populate("user company")
+        .populate("company")
         .sort({ $natural: -1 })
         .lean({ virtuals: true })
         .exec();

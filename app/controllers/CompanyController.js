@@ -263,7 +263,7 @@ module.exports = {
       company: companyid,
       toduration: { $gt: today },
     })
-      .populate("user company")
+      .populate("company")
       .sort({ $natural: -1 })
       .limit(4)
       .lean()
@@ -272,7 +272,7 @@ module.exports = {
       company: companyid,
       toduration: { $lt: today },
     })
-      .populate("user company")
+      .populate("company")
       .sort({ $natural: -1 })
       .limit(4)
       .lean()
@@ -1000,7 +1000,7 @@ module.exports = {
           $or: orcondition,
           $and: andcondition,
         })
-          .populate("user company")
+          .populate("company")
           .sort({ $natural: -1 })
           .lean()
           .exec();
