@@ -1,5 +1,17 @@
 let router = require("express").Router();
-
+const path = require("path");
+var multer  = require('multer');
+const fieldname1 = "picture", fieldname2 = "picture", prefix = "profile";
+const storage = multer.diskStorage({
+  destination: "./public/upload/",
+  filename: function (req, file, cb) {
+      cb(null, prefix + "-" + Date.now() + path.extname(file.originalname));
+  }
+});
+let upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 },
+});
 ///////////////// ON BOARDING
 
 router.post("/user/save", UserController.createuser);
@@ -64,7 +76,7 @@ router.get("/company/my/job", JwtAuth, HomeController.mycompanyjob);
 router.get("/company/info/:id", JwtInfo, CompanyController.companyinfo);
 router.get("/company/dashboard", JwtAuth, CompanyController.companydashboard);
 router.post("/company/update", JwtAuth, CompanyController.companyupdatenoimg);
-router.post("/company/updateimg", JwtAuth, CompanyController.companyimage);
+router.post("/company/updateimg", JwtAuth,upload.single('fileName'), CompanyController.companyimage);
 
 router.post("/company/queryCompanies", CompanyController.queryCompanies);
 router.post("/company/queryJobs", CompanyController.queryJobs);

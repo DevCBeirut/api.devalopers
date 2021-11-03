@@ -412,11 +412,18 @@ module.exports = {
       Name: companyinfo.name,
     });
   },
-  companyimage: async function (req, res) {
-    const data = await ImageManager.uploadimagebody(req, res);
-    return Response.ok(res, {
-      picture: req.file.filename,
-    });
+  companyimage: async function (req, res,next) {
+    try { 
+      logger.info(`File: ${req.file}`);
+      const data = await ImageManager.uploadimagebody(req, res);
+      return Response.ok(res, {
+        picture: req.file.filename,
+      });
+    } catch (error) {     
+      logger.error(error);
+      next();
+    }
+   
   },
   companyupdate: async function (req, res) {
     let companyid = req.userid;
