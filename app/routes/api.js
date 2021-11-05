@@ -25,10 +25,10 @@ router.post("/user/forgot", UserController.forgotpassword);
 router.post("/user/reset", UserController.resetnewpassword);
 
 router.post("/user/update", JwtAuth, UserController.updateprofile);
-router.post("/user/updatecover", JwtAuth, UserController.updateprofilecover);
+router.post("/user/updatecover", JwtAuth,upload.single('cover'), UserController.updateprofilecover);
 router.post("/user/updateabout", JwtAuth, UserController.updateabout);
 router.post("/user/updateskills", JwtAuth, UserController.updateskills);
-router.post("/user/updatecv", JwtAuth, UserController.updatecv);
+router.post("/user/updatecv", JwtAuth,upload.single('cv'), UserController.updatecv);
 router.post("/user/updatelang", JwtAuth, UserController.updatelang);
 router.post("/user/deletelang", JwtAuth, UserController.deletelang);
 
@@ -50,11 +50,7 @@ router.post("/user/searchusers", UserController.searchUsers);
 
 // company
 router.post("/company/save", CompanyController.createcompany);
-router.post(
-  "/company/updatecover",
-  JwtAuth,
-  CompanyController.updateprofilecover
-);
+router.post("/company/updatecover", JwtAuth,upload.single('cover'),  CompanyController.updateprofilecover);
 
 // home front end
 router.get("/home/frontend", HomeController.frontend);
