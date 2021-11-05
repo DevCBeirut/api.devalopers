@@ -232,7 +232,6 @@ updatecv = async (req, res) => {
     info.cvrealfilename = data.cvrealfilename;
 
     await info.save();
-    logger.info("xxx");
     return Response.ok(res);
   } catch (e) {
     logger.info("error");
