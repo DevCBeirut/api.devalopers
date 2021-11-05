@@ -244,7 +244,7 @@ updatelang = async (req, res) => {
   let info = await User.findById(userid).exec();
   const languagename = req.body.languagename;
   const languageproficienty = req.body.languageproficienty;
-  let language = info.language;
+  let language = info.languages;
   language.push({
     languagename: languagename,
     languageproficienty: languageproficienty,

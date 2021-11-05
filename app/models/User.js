@@ -3,17 +3,17 @@ const mongooseLeanVirtual = require("mongoose-lean-virtuals");
 let bcrypt = require("bcrypt");
 const validator = require("validator");
 const { toJSON, paginate } = require("./plugins");
-let mongoosastic = require('mongoosastic');
+let mongoosastic = require("mongoosastic");
 
 let schema = mongoose.Schema(
   {
     first: {
       type: String,
-      default: "", es_indexed:true 
+      default: ""
     },
     last: {
       type: String,
-      default: "", es_indexed:true 
+      default: ""
     },
 
     email: {
@@ -63,19 +63,15 @@ let schema = mongoose.Schema(
       default: [],
     },
     languages: {
-      type: [Object],
+      type: [{ languagename: String, languageproficienty: String }],
       default: [],
-    },
-    company: {
-      type: [Object],
-      default: [],
-    },
+    },    
     education: {
-      type: [Object],
-      default: [], es_indexed:true 
+      type: [{school: String, degree:String, startschoolyear:String,endschoolyear:String}],
+      default: []
     },
     exp: {
-      type: [Object],
+      type: [{companyname:String,companyposition:String,startcompanyyear:String,endcompanyear:String, companydescription:String}],
       default: [],
     },
     location: {
@@ -174,7 +170,7 @@ let schema = mongoose.Schema(
   }
 );
 
-schema.index({'$**':'text'});
+schema.index({ "$**": "text" });
 
 schema.pre("save", function (next) {
   let user = this;
@@ -274,12 +270,11 @@ schema.set("toObject", { getters: true, virtuals: true });
 schema.set("toJSON", { getters: true, virtuals: true });
 schema.plugin(paginate);
 
-
-schema.plugin(mongoosastic, {  
-  host:process.env.elastichost,
+schema.plugin(mongoosastic, {
+  host: process.env.elastichost,
   port: process.env.elasticport,
   protocol: process.env.elasticprotocol,
-  auth: process.env.elasticccredentials
+  auth: process.env.elasticccredentials,
 });
 
 const collectionname = "user";
