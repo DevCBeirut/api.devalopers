@@ -140,6 +140,26 @@ updatepush = (req, res) => {
     });
   });
 };
+userimage= async  (req, res,next) =>{
+  try { 
+    logger.info(`File: ${req.file}`);
+    let userid = req.userid;
+    const data = await ImageManager.uploadimagebody(req, res);
+    console.log(data);
+    let userinfo = await User.findById(userid)
+    .sort({ $natural: -1 })
+    .exec();
+    userinfo.picture= data.picture;
+    await userinfo.save();
+    return Response.ok(res, {
+      picture: req.file.filename,
+    });
+  } catch (error) {     
+    logger.error(error);
+    next();
+  }
+ 
+};
 updateprofile = async (req, res) => {
   let userid = req.userid;
   const data =req.body; //await ImageManager.uploadimagebody(req, res);
@@ -742,6 +762,7 @@ const searchUsers = async (req, res, next) => {
 module.exports = {
   queryUsers,
   searchUsers,
+  userimage,
   userlogout,
   userdeactivate,
   useractivate,

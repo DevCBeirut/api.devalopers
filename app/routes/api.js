@@ -46,6 +46,8 @@ router.get("/user/savejob/:id", JwtAuth, UserController.savejobapplicant);
 router.get("/user/my/saved", JwtAuth, UserController.mysavedjob);
 router.get("/user/my/application", JwtAuth, UserController.myapplication);
 
+router.post("/user/updateimg", JwtAuth,upload.single('picture'), UserController.userimage);
+
 router.post("/user/queryusers", UserController.queryUsers);
 router.post("/user/searchusers", UserController.searchUsers);
 
