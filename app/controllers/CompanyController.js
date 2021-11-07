@@ -415,7 +415,13 @@ module.exports = {
   companyimage: async function (req, res,next) {
     try { 
       logger.info(`File: ${req.file}`);
+      let companyid = req.userid;
       const data = await ImageManager.uploadimagebody(req, res);
+      let companyinfo = await Company.findById(companyid)
+      .sort({ $natural: -1 })
+      .exec();
+      companyinfo.picture= data.picture;
+      await companyinfo.save();
       return Response.ok(res, {
         picture: req.file.filename,
       });

@@ -142,7 +142,7 @@ updatepush = (req, res) => {
 };
 updateprofile = async (req, res) => {
   let userid = req.userid;
-  const data = await ImageManager.uploadimagebody(req, res);
+  const data =req.body; //await ImageManager.uploadimagebody(req, res);
   const first = data.first;
   const last = data.last;
   const location = data.location;
