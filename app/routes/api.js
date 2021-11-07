@@ -38,7 +38,7 @@ router.post("/user/deletework", JwtAuth, UserController.deletework);
 router.post("/user/updateeducation", JwtAuth, UserController.updateeducation);
 router.post("/user/deleteschool", JwtAuth, UserController.deleteeducation);
 
-router.get("/user/info/:id", JwtAuth, UserController.userinfo);
+router.get("/user/info/:id", UserController.userinfo);
 router.post("/user/changepass", JwtAuth, UserController.changepass);
 router.get("/user/dashboard", JwtAuth, UserController.userdashboard);
 router.get("/user/savejob/:id", JwtAuth, UserController.savejobapplicant);

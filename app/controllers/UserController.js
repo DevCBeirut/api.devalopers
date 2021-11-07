@@ -229,7 +229,7 @@ updatecv = async (req, res) => {
     const data = await ImageManager.uploadimagebody(req, res, "cv");
     let info = await User.findById(userid).sort({ $natural: -1 }).exec();
     info.cv = data.cv;
-    info.cvrealfilename = data.cvrealfilename;
+    info.cvrealfilename = req.file.filename;
 
     await info.save();
     return Response.ok(res);
@@ -256,7 +256,7 @@ deletelang = async (req, res) => {
   let userid = req.userid;
   let info = await User.findById(userid).exec();
   const languagename = req.body.languagename;
-  info.language = info.language.filter((e) => e.languagename != languagename);
+  info.language = info.languages.filter((e) => e.languagename != languagename);
   await info.save();
   return Response.ok(res);
 };
@@ -287,13 +287,24 @@ updateworkexp = async (req, res) => {
   const companydescription = req.body.companydescription;
 
   let exp = info.exp;
-  exp.unshift({
-    companyname: companyname,
-    companyposition: companyposition,
-    startcompanyyear: startcompanyyear,
-    endcompanyear: endcompanyear,
-    companydescription: companydescription,
+  var found = false;
+  exp.filter((xp) => {
+    if (xp.companyname === companyname) {
+      xp.companyposition = companyposition;
+      xp.startcompanyyear = startcompanyyear;
+      xp.endcompanyear = endcompanyear;
+      xp.companydescription = xp.companydescription;
+      found = true;
+    }
   });
+  if (!found)
+    exp.unshift({
+      companyname: companyname,
+      companyposition: companyposition,
+      startcompanyyear: startcompanyyear,
+      endcompanyear: endcompanyear,
+      companydescription: companydescription,
+    });
   info.exp = exp;
   await info.save();
   return res.ok();
@@ -308,12 +319,22 @@ updateeducation = async (req, res) => {
   const endschoolyear = req.body.endschoolyear;
 
   let education = info.education;
-  education.unshift({
-    school: school,
-    degree: degree,
-    startschoolyear: startschoolyear,
-    endschoolyear: endschoolyear,
+  var found = false;
+  education.filter((edu) => {
+    if (edu.school === school) {
+      edu.degree = degree;
+      edu.startschoolyear = startschoolyear;
+      edu.endschoolyear = endschoolyear;
+      found = true;
+    }
   });
+  if (!found)
+    education.unshift({
+      school: school,
+      degree: degree,
+      startschoolyear: startschoolyear,
+      endschoolyear: endschoolyear,
+    });
 
   info.education = education;
   await info.save();
@@ -327,16 +348,16 @@ userdashboard = async (req, res, next) => {
       .sort({ $natural: -1 })
       .lean({ virtuals: true })
       .exec();
-      logger.debug(`User ${info} fetched`);
-      logger.debug(`Counting saved jobs ${userid}`);
+    logger.debug(`User ${info} fetched`);
+    logger.debug(`Counting saved jobs ${userid}`);
     const countsavedjobs = await JobSaved.countDocuments({ user: userid })
       .lean()
       .exec();
-      logger.debug(`Counting applied jobs ${userid}`);
+    logger.debug(`Counting applied jobs ${userid}`);
     const countapplicant = await JobApplicant.countDocuments({ user: userid })
       .lean({ virtuals: true })
       .exec();
-      logger.debug(`Getting most active companies`);
+    logger.debug(`Getting most active companies`);
     const mostactivecompanies = await UserHelper.mostactivecompanies();
     logger.debug(`Counting developers`);
     let countdev = await User.countDocuments({ status: 1 }).exec();
