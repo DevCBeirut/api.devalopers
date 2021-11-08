@@ -276,7 +276,7 @@ deletelang = async (req, res) => {
   let userid = req.userid;
   let info = await User.findById(userid).exec();
   const languagename = req.body.languagename;
-  info.language = info.languages.filter((e) => e.languagename != languagename);
+  info.languages = info.languages.filter((e) => e.languagename != languagename);
   await info.save();
   return Response.ok(res);
 };
