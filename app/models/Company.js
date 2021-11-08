@@ -194,7 +194,7 @@ schema.methods.compareRowPassword = function (password, callback) {
 schema.virtual("fullpicture").get(function () {
   let fullpicture = "";
   if (this.picture.length > 2) {
-    fullpicture = _config("app.imageurl") + this.picture;
+    fullpicture = `/upload/${this.picture}`;
   }
   return fullpicture;
 });
@@ -202,7 +202,7 @@ schema.virtual("fullpicture").get(function () {
 schema.virtual("fullcover").get(function () {
   let fullcover = "";
   if (this.cover.length > 2) {
-    fullcover = _config("app.imageurl") + this.cover;
+    fullcover = `/upload/${this.cover}`;
   }
   return fullcover;
 });
