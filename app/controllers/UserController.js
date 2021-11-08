@@ -751,7 +751,8 @@ const queryUsers = async (req, res) => {
 
 const searchUsers = async (req, res, next) => {
   var query_string = req.body.query_string;
-  User.find({ $text: { $search: query_string } }).exec(function (err, docs) {
+  var options = req.body.options;
+  User.find({ $text: { $search: query_string } },null,options).exec(function (err, docs) {
     if (err) {
       logger.error(err);
       next(err);

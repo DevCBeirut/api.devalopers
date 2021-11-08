@@ -56,7 +56,7 @@ module.exports = {
       // EmailService.send(user.email, "Activate YOUR Account Now", msg);
       //logger.info(user)
       return Response.ok(res, {
-        userid:user._id,
+        userid: user._id,
         msg: "Please Verify your account",
         token: await Security.generateToken(user._id, user.name, user.status),
         expires: await UserHelper.getSessionTimeout(),
@@ -82,7 +82,6 @@ module.exports = {
     }
   },
   savejob: async function (req, res) {
-    
     let userid = req.userid;
     const data = req.body;
     logger.info(`New job added for ${userid} with name: ${data.name}`);
@@ -412,24 +411,23 @@ module.exports = {
       Name: companyinfo.name,
     });
   },
-  companyimage: async function (req, res,next) {
-    try { 
+  companyimage: async function (req, res, next) {
+    try {
       logger.info(`File: ${req.file}`);
       let companyid = req.userid;
       const data = await ImageManager.uploadimagebody(req, res);
       let companyinfo = await Company.findById(companyid)
-      .sort({ $natural: -1 })
-      .exec();
-      companyinfo.picture= data.picture;
+        .sort({ $natural: -1 })
+        .exec();
+      companyinfo.picture = data.picture;
       await companyinfo.save();
       return Response.ok(res, {
         picture: req.file.filename,
       });
-    } catch (error) {     
+    } catch (error) {
       logger.error(error);
       next();
     }
-   
   },
   companyupdate: async function (req, res) {
     let companyid = req.userid;
@@ -847,7 +845,11 @@ module.exports = {
   },
   jobtextsearch: async function (req, res, next) {
     var query_string = req.body.query_string;
-    Job.find({ $text: { $search: query_string } }).exec(function (err, docs) {
+    var options = req.body.options;
+    Job.find({ $text: { $search: query_string } },null, options).exec(function (
+      err,
+      docs
+    ) {
       if (err) {
         logger.error(err);
         next(err);

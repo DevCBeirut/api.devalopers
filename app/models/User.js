@@ -228,14 +228,14 @@ schema.methods.compareRowPassword = function (password, callback) {
 
 schema.virtual("fullpicture").get(function () {
   let fullpicture = "";
-  if (this.picture.length > 2) {
+  if (this.picture && this.picture.length > 2) {
     fullpicture = _config("app.imageurl") + this.picture;
   }
   return fullpicture;
 });
 schema.virtual("fullcover").get(function () {
   let fullcover = "";
-  if (this.cover.length > 2) {
+  if (this.cover && this.cover.length > 2) {
     fullcover = _config("app.imageurl") + this.cover;
   }
   return fullcover;
@@ -243,7 +243,7 @@ schema.virtual("fullcover").get(function () {
 
 schema.virtual("fullcv").get(function () {
   let fullcv = "";
-  if (this.cv.length > 2) {
+  if (this.cv && this.cv.length > 2) {
     fullcv = _config("app.imageurl") + this.cv;
   }
   return fullcv;
